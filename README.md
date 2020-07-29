@@ -1,6 +1,6 @@
-# Open-Source Translation Pipeline
+# ELSA Localization Pipeline
 
-This project is an open-source translation pipeline that aims to streamline the process of translation management. It is maintained by the NYC Mayor's Office of the CTO. 
+The NYC Mayor’s Office of the CTO (MOCTO) is developing an open-source translation pipeline that aims to streamline the process of translation management for itself and potentially other city agencies. 
 
 - **Open-source:** We are committed to making our entire platform publicly accessible. 
 - **Easy setup:** Our service should be easy to understand and set up. 
