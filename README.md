@@ -6,10 +6,7 @@ This project is an open-source translation pipeline that aims to streamline the 
 - **Easy setup:** Our service should be easy to understand and set up. 
 - **Modular:** The separate components of our pipeline should be easily adaptable. We hope to eventually expand our integrations with more version control systems and translation service plugins. 
 
-**Please see our [onboarding document](https://docs.google.com/document/d/1dFMEN6JwqkAfVwkoQaYkzCT--Hp4zvCJ7ucyMOfsHwQ/edit?usp=sharing) if you would like to get involved!**
-
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+**Please reach out to [jiman@cto.nyc.gov](mailto:jiman@cto.nyc.gov) if you would like to get involved!**
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
