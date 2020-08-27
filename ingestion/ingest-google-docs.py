@@ -10,6 +10,7 @@ from oauth2client import tools
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+from git import Repo
 
 SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly']
 SCOPES_DOC = ['https://www.googleapis.com/auth/documents.readonly']
@@ -56,6 +57,7 @@ def read_strucutural_elements(elements):
     return text
 
 
+# Find ids of all Google docs in the raw Serge folder
 store = file.Storage('secrets/token_read.json')
 page_token = None   
 creds = None
@@ -89,6 +91,7 @@ while True:
     if page_token is None:
         break
 
+# Enumerate over Google doc ids and fetch content
 store = file.Storage('secrets/token.json')
 creds_doc = store.get()
 if not creds_doc or creds_doc.invalid:
@@ -106,3 +109,17 @@ for file_id in file_ids:
         d['title'] = title
         d['content'] = content
         json.dump(d, outfile)
+
+# Push shared repository to Git
+print("Pushing files to shared repository")
+root_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
+GIT_REPO_PATH = f'{root_path}/.git'
+COMMIT_MESSAGE = 'Update shared repository'
+
+def git_push():
+    repo = Repo(GIT_REPO_PATH)
+    repo.index.add(["shared_directory"])
+    repo.index.commit(COMMIT_MESSAGE)
+    repo.git.push('origin', 'feature_docs_api')   
+
+git_push()
