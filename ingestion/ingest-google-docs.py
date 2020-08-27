@@ -2,6 +2,7 @@ from __future__ import print_function
 import json
 import pickle
 import os.path
+from time import sleep
 from apiclient import discovery
 from httplib2 import Http
 from oauth2client import client
@@ -16,6 +17,16 @@ SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly']
 SCOPES_DOC = ['https://www.googleapis.com/auth/documents.readonly']
 DISCOVERY_DOC = ('https://docs.googleapis.com/$discovery/rest?'
                          'version=v1')
+
+ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
+GIT_REPO_PATH = f'{ROOT_PATH}/.git'
+COMMIT_MESSAGE = 'Update shared repository'
+
+def git_push():
+    repo = Repo(GIT_REPO_PATH)
+    repo.index.add(["shared_directory"])
+    repo.index.commit(COMMIT_MESSAGE)
+    repo.git.push('origin', 'feature_docs_api') 
 
 def read_paragraph_element(element):
     """Returns the text in the given ParagraphElement.
@@ -57,69 +68,67 @@ def read_strucutural_elements(elements):
     return text
 
 
-# Find ids of all Google docs in the raw Serge folder
-store = file.Storage('secrets/token_read.json')
-page_token = None   
-creds = None
-flow = client.flow_from_clientsecrets('secrets/credentials.json', SCOPES)
-if os.path.exists('secrets/token_read.pickle'):
-    with open('secrets/token_read.pickle', 'rb') as token:
-        creds = pickle.load(token)
-    # If there are no (valid) credentials available, let the user log in.
-if not creds or creds.invalid:
-    if creds and creds.expired and creds.refresh_token:
-        creds.refresh(Request())
-    else:
-        flow = client.flow_from_clientsecrets('secrets/credentials.json', SCOPES)
-        creds = tools.run_flow(flow, store)
-    # Save the credentials for the next run
-    with open('secrets/token_read.pickle', 'wb') as token:
-        pickle.dump(creds, token)
-service_drive = build('drive', 'v3', credentials=creds)
-file_ids = []
-while True:
-    response = service_drive.files().list(q="name contains 'Raw_Document'",
-                                          spaces='drive',
-                                          fields='nextPageToken, files(id, name)',
-                                          pageToken=page_token).execute()
-    for file_content in response.get('files', []):
-        # Process change
-        file_id = file_content.get('id')
-        print('Found file: %s (%s)' % (file_content.get('name'), file_id))
-        file_ids.append(file_id)
-    page_token = response.get('nextPageToken', None)
-    if page_token is None:
-        break
+def run():
+    # Find ids of all Google docs in the raw Serge folder
+    store = file.Storage('secrets/token_read.json')
+    page_token = None   
+    creds = None
+    flow = client.flow_from_clientsecrets('secrets/credentials.json', SCOPES)
+    if os.path.exists('secrets/token_read.pickle'):
+        with open('secrets/token_read.pickle', 'rb') as token:
+            creds = pickle.load(token)
+        # If there are no (valid) credentials available, let the user log in.
+    if not creds or creds.invalid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = client.flow_from_clientsecrets('secrets/credentials.json', SCOPES)
+            creds = tools.run_flow(flow, store)
+        # Save the credentials for the next run
+        with open('secrets/token_read.pickle', 'wb') as token:
+            pickle.dump(creds, token)
+    service_drive = build('drive', 'v3', credentials=creds)
+    file_ids = []
+    while True:
+        response = service_drive.files().list(q="name contains 'Raw_Document'",
+                                              spaces='drive',
+                                              fields='nextPageToken, files(id, name)',
+                                              pageToken=page_token).execute()
+        for file_content in response.get('files', []):
+            # Process change
+            file_id = file_content.get('id')
+            print('Found file: %s (%s)' % (file_content.get('name'), file_id))
+            file_ids.append(file_id)
+        page_token = response.get('nextPageToken', None)
+        if page_token is None:
+            break
 
-# Enumerate over Google doc ids and fetch content
-store = file.Storage('secrets/token.json')
-creds_doc = store.get()
-if not creds_doc or creds_doc.invalid:
-    flow_doc = client.flow_from_clientsecrets('secrets/credentials.json', SCOPES_DOC)
-    creds_doc = tools.run_flow(flow_doc, store)
-service_docs = discovery.build('docs', 'v1', http=creds_doc.authorize(Http()), discoveryServiceUrl=DISCOVERY_DOC)
-for file_id in file_ids:
-    result = service_docs.documents().get(documentId=file_id).execute()
-    content = read_strucutural_elements(result.get('body').get('content'))
-    title = result.get('title')
-    root_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
-    filename = f"{root_path}/shared_directory/{title}.json"
-    with open(filename, 'w') as outfile:
-        d = {}
-        d['title'] = title
-        d['content'] = content
-        json.dump(d, outfile)
+    # Enumerate over Google doc ids and fetch content
+    store = file.Storage('secrets/token.json')
+    creds_doc = store.get()
+    if not creds_doc or creds_doc.invalid:
+        flow_doc = client.flow_from_clientsecrets('secrets/credentials.json', SCOPES_DOC)
+        creds_doc = tools.run_flow(flow_doc, store)
+    service_docs = discovery.build('docs', 'v1', http=creds_doc.authorize(Http()), discoveryServiceUrl=DISCOVERY_DOC)
+    for file_id in file_ids:
+        result = service_docs.documents().get(documentId=file_id).execute()
+        content = read_strucutural_elements(result.get('body').get('content'))
+        title = result.get('title')
+        filename = f"{ROOT_PATH}/shared_directory/{title}.json"
+        with open(filename, 'w') as outfile:
+            d = {}
+            d['title'] = title
+            d['content'] = content
+            json.dump(d, outfile)
 
-# Push shared repository to Git
-print("Pushing files to shared repository")
-root_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
-GIT_REPO_PATH = f'{root_path}/.git'
-COMMIT_MESSAGE = 'Update shared repository'
+    # Push shared repository to Git
+    print("Pushing files to shared repository")  
+    git_push()
 
-def git_push():
-    repo = Repo(GIT_REPO_PATH)
-    repo.index.add(["shared_directory"])
-    repo.index.commit(COMMIT_MESSAGE)
-    repo.git.push('origin', 'feature_docs_api')   
+def main():
+    while True:
+        run()
+        sleep(10)
 
-git_push()
+if __name__ == "__main__":
+    main()
