@@ -56,22 +56,22 @@ def read_strucutural_elements(elements):
     return text
 
 
-store = file.Storage('secrets/token.json')
+store = file.Storage('secrets/token_read.json')
 page_token = None   
 creds = None
 flow = client.flow_from_clientsecrets('secrets/credentials.json', SCOPES)
-if os.path.exists('secrets/token.pickle'):
-    with open('secrets/token.pickle', 'rb') as token:
+if os.path.exists('secrets/token_read.pickle'):
+    with open('secrets/token_read.pickle', 'rb') as token:
         creds = pickle.load(token)
     # If there are no (valid) credentials available, let the user log in.
-if not creds or not creds.valid:
+if not creds or creds.invalid:
     if creds and creds.expired and creds.refresh_token:
         creds.refresh(Request())
     else:
         flow = client.flow_from_clientsecrets('secrets/credentials.json', SCOPES)
         creds = tools.run_flow(flow, store)
     # Save the credentials for the next run
-    with open('token.pickle', 'wb') as token:
+    with open('secrets/token_read.pickle', 'wb') as token:
         pickle.dump(creds, token)
 service_drive = build('drive', 'v3', credentials=creds)
 file_ids = []
@@ -89,18 +89,19 @@ while True:
     if page_token is None:
         break
 
-store = file.Storage('token.json')
+store = file.Storage('secrets/token.json')
 creds_doc = store.get()
 if not creds_doc or creds_doc.invalid:
-    flow_doc = client.flow_from_clientsecrets('credentials.json', SCOPES)
+    flow_doc = client.flow_from_clientsecrets('secrets/credentials.json', SCOPES_DOC)
     creds_doc = tools.run_flow(flow_doc, store)
 service_docs = discovery.build('docs', 'v1', http=creds_doc.authorize(Http()), discoveryServiceUrl=DISCOVERY_DOC)
 for file_id in file_ids:
     result = service_docs.documents().get(documentId=file_id).execute()
     content = read_strucutural_elements(result.get('body').get('content'))
-    title = result.get('title') 
-    filename = f"shared_directory/{title}.json"
-    with open(filename, 'a') as outfile:
+    title = result.get('title')
+    root_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
+    filename = f"{root_path}/shared_directory/{title}.json"
+    with open(filename, 'w') as outfile:
         d = {}
         d['title'] = title
         d['content'] = content
