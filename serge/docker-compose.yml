@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  serge:
+    image: serge
+    stdin_open: true
+    tty: true
+
+networks:
+  public:
+  private:
+
+volumes:
+  postgres-data:

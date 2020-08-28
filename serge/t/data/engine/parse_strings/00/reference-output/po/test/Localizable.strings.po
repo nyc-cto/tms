@@ -1,0 +1,176 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: test\n"
+"Generated-By: Serge 1.4\n"
+
+#. Multi-line string 1
+#: File: Localizable.strings
+#: ID: 3d14766aedb57e2b2cbf6d5e84981b6c
+msgid ""
+"Line 1.\n"
+"Line 2.\n"
+"Line 3"
+msgstr ""
+"Łĩŋē 1.\n"
+"Łĩŋē 2.\n"
+"Łĩŋē 3"
+
+#. String_with_no_quotes1
+#: File: Localizable.strings
+#: ID: 3cf884a5158a75e2ed71b81803d1b7e8
+msgid "some text 1"
+msgstr "šőḿē ţēҳţ 1"
+
+#. comment line 2
+#. String_with_no_quotes2
+#: File: Localizable.strings
+#: ID: b53ac92120b0c6aa8ffc6f6cdf1b1c83
+msgid "some text 2"
+msgstr "šőḿē ţēҳţ 2"
+
+#. String_with_no_quotes3
+#: File: Localizable.strings
+#: ID: 279e80c9df260acf16ae08157f1e21d8
+msgid "some text 3"
+msgstr "šőḿē ţēҳţ 3"
+
+#. String_with_no_quotes4
+#: File: Localizable.strings
+#: ID: cc7913b8c6dbb0ef45c859e8b47f30e0
+msgid "some text 4"
+msgstr "šőḿē ţēҳţ 4"
+
+#. String_with_quotes5
+#: File: Localizable.strings
+#: ID: 10d1ffb5cd2169780ce6c92c321c4ccb
+msgid "some text 5"
+msgstr "šőḿē ţēҳţ 5"
+
+#. comment line 6
+#. String with quotes 6
+#: File: Localizable.strings
+#: ID: d4ef0b37b77218dcd4322ea44a88ea8a
+msgid "some text 6"
+msgstr "šőḿē ţēҳţ 6"
+
+#. String with quotes 7
+#: File: Localizable.strings
+#: ID: cdcd03f8e31a019e1d3000e34111d1e6
+msgid "some text 7"
+msgstr "šőḿē ţēҳţ 7"
+
+#. String with quotes 8
+#: File: Localizable.strings
+#: ID: e9b0c8716f33eb4fe4cc7e5e22962f7c
+msgid "some text 8"
+msgstr "šőḿē ţēҳţ 8"
+
+#. String with quotes 9
+#: File: Localizable.strings
+#: ID: 1fd1007e02dbdc340f4d3171a049d7c1
+msgid "some text 9"
+msgstr "šőḿē ţēҳţ 9"
+
+#. Multi-line string 2
+#: File: Localizable.strings
+#: ID: 7f6f1c2a83e3dd528998b5f079428e44
+msgid ""
+"Line A.\n"
+"Line B.\n"
+"Line C"
+msgstr ""
+"Łĩŋē Ā.\n"
+"Łĩŋē Ḃ.\n"
+"Łĩŋē Ć"
+
+#. Foo1 "%@" key.
+#: File: Localizable.strings
+#: ID: 2de06b62a6c228ff55a228c545f8a646
+msgid "Foo1 value."
+msgstr "Ḟőő1 ṽáļũē."
+
+#. Foo2 "%@" key.
+#: File: Localizable.strings
+#: ID: 59631f0936926e28ec587af646c312f9
+msgid "Foo2 \"%@\" value."
+msgstr "Ḟőő2 \"%@\" ṽáļũē."
+
+#. Foo3 key.
+#: File: Localizable.strings
+#: ID: 599f5457b262e3c67c63605cca3a2819
+msgid "Foo3 \"%@\" value."
+msgstr "Ḟőő3 \"%@\" ṽáļũē."
+
+#. Foo4 key.
+#: File: Localizable.strings
+#: ID: 232ffcbc91841b0035884fc79245beda
+msgid "Foo4 value."
+msgstr "Ḟőő4 ṽáļũē."
+
+#. Foo5 \"%@\" key.
+#: File: Localizable.strings
+#: ID: 8a39c31bf9b8cf975e4680828d8ad029
+msgid "Foo5 \\\"%@\\\" value."
+msgstr "Ḟőő5 \\\"%@\\\" ṽáļũē."
+
+#. test special 1
+#: File: Localizable.strings
+#: ID: f4ffad19260647535e623d638e90b6b3
+msgid "foo\\bar\\baz"
+msgstr "ḟőő\\báŕ\\báž"
+
+#. test special 2
+#: File: Localizable.strings
+#: ID: c082778a6c6dfa9aacd82b07739b9c97
+msgid "foo\tbar\tbaz"
+msgstr "ḟőő\tḃáŕ\tḃáž"
+
+#. test special 3
+#: File: Localizable.strings
+#: ID: 715b1cf86b765b574164abdd921df1cf
+msgid ""
+"foo\n"
+"bar\n"
+"baz"
+msgstr ""
+"ḟőő\n"
+"ḃáŕ\n"
+"ḃáž"
+
+#. test special 4
+#: File: Localizable.strings
+#: ID: 2102640cec1e8586f72e4966bf661f4e
+msgid ""
+"foo\r\n"
+"bar\r\n"
+"baz"
+msgstr ""
+"ḟőő\r\n"
+"ḃáŕ\r\n"
+"ḃáž"
+
+#. test special 5
+#: File: Localizable.strings
+#: ID: 8498579c44c6b13b6acef7413ace1b44
+msgid "foo bar baz"
+msgstr "ḟőő ḃáŕ ḃáž"
+
+#. test escaped 1
+#: File: Localizable.strings
+#: ID: a578a0d9ca40837392ab03973d8912c6
+msgid "TAB is escaped as \\t"
+msgstr "ŦĀḂ ĩš ēšçáṕēđ áš \\t"
+
+#. test escaped 2
+#: File: Localizable.strings
+#: ID: 28bb2e8a47e6f1fefb1f858b59f5603b
+msgid "CR is escaped as \\r"
+msgstr "ĆŖ ĩš ēšçáṕēđ áš \\r"
+
+#. test escaped 3
+#: File: Localizable.strings
+#: ID: f2e3e8dfa5fd1dd96f8b9e0647d08126
+msgid "LF is escaped as \\n"
+msgstr "ŁḞ ĩš ēšçáṕēđ áš \\n"

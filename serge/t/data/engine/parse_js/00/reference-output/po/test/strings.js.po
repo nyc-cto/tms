@@ -1,0 +1,64 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: test\n"
+"Generated-By: Serge 1.4\n"
+
+#. key1
+#: File: strings.js
+#: ID: 72c38a07d9ca5b210f2238358cecdae0
+msgid "value1"
+msgstr "ṽáļũē1"
+
+#. key2
+#: File: strings.js
+#: ID: 04011367b58d51086ae91d756fd56a81
+msgid "value\\2"
+msgstr "ṽáļũē\\2"
+
+#. key3
+#: File: strings.js
+#: ID: 1b6e7406dfeaab35f6e83c55a99ed2ec
+msgid "value \"3\""
+msgstr "ṽáļũē \"3\""
+
+#. key4
+#: File: strings.js
+#: ID: dcbae4201ab999ef1b904337135a87c1
+msgid "value\\\"4\""
+msgstr "ṽáļũē\\\"4\""
+
+#: File: strings.js
+#: ID: ff8ff36360c3187d5a7e8a7e5435b23d
+msgctxt "value1"
+msgid "value1"
+msgstr "ṽáļũē1"
+
+#. key5
+#. this is a comment "with quotes" and forward slashes: // test
+#: File: strings.js
+#: ID: 70b1ec883872532408cfe3dca6fbd66c
+msgid "value5"
+msgstr "ṽáļũē5"
+
+#. key6
+#. comment 6
+#: File: strings.js
+#: ID: 7c5a1479bae6385cd58bc0f5318c53be
+msgid "value6"
+msgstr "ṽáļũē6"
+
+#. key7
+#. comment 7
+#: File: strings.js
+#: ID: aeafaaa48c4ca135a3e1213589e98550
+msgid "value7"
+msgstr "ṽáļũē7"
+
+#. key8
+#. comment 8
+#: File: strings.js
+#: ID: e4f56606f5795fc1065ce5036f39e0de
+msgid "value8"
+msgstr "ṽáļũē8"

@@ -1,0 +1,25 @@
+jobs
+{
+    {
+        @inherit                                 ../../common.serge#job_template
+        source_match                             \.xml$
+
+        parser
+        {
+            plugin                               parse_android
+        }
+
+        callback_plugins
+        {
+            :calculate-md5
+            {
+                plugin                           run_command
+
+                data
+                {
+                    command                      perl ../../md5.pl <%OUTFILE% >%OUTFILE%.md5
+                }
+            }
+        }
+    }
+}
