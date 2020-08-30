@@ -114,7 +114,7 @@ def run():
         result = service_docs.documents().get(documentId=file_id).execute()
         content = read_strucutural_elements(result.get('body').get('content'))
         title = result.get('title')
-        filename = f"{ROOT_PATH}/shared_directory/{title}.json"
+        filename = f"{ROOT_PATH}/shared_directory/en/{title}.json"
         with open(filename, 'w') as outfile:
             d = {}
             d['title'] = title
