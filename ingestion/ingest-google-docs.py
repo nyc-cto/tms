@@ -13,8 +13,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from git import Repo
 
-SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly']
-SCOPES_DOC = ['https://www.googleapis.com/auth/documents.readonly']
+SCOPES_READ_DRIVE = ['https://www.googleapis.com/auth/drive.metadata.readonly']
+SCOPES_READ_DOCS = ['https://www.googleapis.com/auth/documents.readonly']
 DISCOVERY_DOC = ('https://docs.googleapis.com/$discovery/rest?'
                          'version=v1')
 
@@ -40,7 +40,7 @@ def read_paragraph_element(element):
     return text_run.get('content')
 
 
-def read_strucutural_elements(elements):
+def read_structural_elements(elements):
     """Recurses through a list of Structural Elements to read a document's text where text may be
         in nested elements.
 
@@ -60,35 +60,61 @@ def read_strucutural_elements(elements):
             for row in table.get('tableRows'):
                 cells = row.get('tableCells')
                 for cell in cells:
-                    text += read_strucutural_elements(cell.get('content'))
+                    text += read_structural_elements(cell.get('content'))
         elif 'tableOfContents' in value:
             # The text in the TOC is also in a Structural Element.
             toc = value.get('tableOfContents')
-            text += read_strucutural_elements(toc.get('content'))
+            text += read_structural_elements(toc.get('content'))
     return text
 
 
 def run():
-    # Find ids of all Google docs in the raw Serge folder
-    store = file.Storage('secrets/token_read.json')
+    # Generate secrets, if not already generated
+    store_read_drive = file.Storage('secrets/token_read_drive.json')
+    creds_read_drive = store_read_drive.get()
     page_token = None   
-    creds = None
-    flow = client.flow_from_clientsecrets('secrets/credentials.json', SCOPES)
-    if os.path.exists('secrets/token_read.pickle'):
-        with open('secrets/token_read.pickle', 'rb') as token:
-            creds = pickle.load(token)
-        # If there are no (valid) credentials available, let the user log in.
-    if not creds or creds.invalid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
+    flow = client.flow_from_clientsecrets('secrets/credentials.json', SCOPES_READ_DRIVE)
+    if os.path.exists('secrets/token_read_drive.pickle'):
+        with open('secrets/token_read_drive.pickle', 'rb') as token:
+            creds_read_drive = pickle.load(token)
+            # If there are no (valid) credentials available, let the user log in.
+    if not creds_read_drive or creds_read_drive.invalid:
+        if creds_read_drive and creds_read_drive.expired and creds_read_drive.refresh_token:
+            creds_read_drive.refresh(Request())
         else:
-            flow = client.flow_from_clientsecrets('secrets/credentials.json', SCOPES)
-            creds = tools.run_flow(flow, store)
+            flow = client.flow_from_clientsecrets('secrets/credentials.json', SCOPES_READ_DRIVE)
+            creds_read_drive = tools.run_flow(flow, store)
         # Save the credentials for the next run
-        with open('secrets/token_read.pickle', 'wb') as token:
-            pickle.dump(creds, token)
-    service_drive = build('drive', 'v3', credentials=creds)
+        with open('secrets/token_read_drive.pickle', 'wb') as token:
+            pickle.dump(creds_read_drive, token)
+    service_drive = build('drive', 'v3', credentials=creds_read_drive)
     file_ids = []
+
+    # Enumerate over Google doc ids and fetch content
+    creds_read_docs = None
+    # if not creds_read_docs or creds_read_docs.invalid:
+    #     flow_doc = client.flow_from_clientsecrets('secrets/credentials.json', SCOPES_READ_DOCS)
+    #     creds_read_docs = tools.run_flow(flow_doc, store)
+    # service_docs = discovery.build('docs', 'v1', http=creds_read_docs.authorize(Http()), discoveryServiceUrl=DISCOVERY_DOC)
+
+    if os.path.exists('secrets/token_read_docs.pickle'):
+        with open('secrets/token_read_docs.pickle', 'rb') as token:
+            creds_read_docs = pickle.load(token)
+        # If there are no (valid) credentials available, let the user log in.
+    if not creds_read_docs or not creds_read_docs.valid:
+        if creds_read_docs and creds_read_docs.expired and creds_read_docs.refresh_token:
+            creds_read_docs.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                'secrets/credentials.json', SCOPES_READ_DOCS)
+            creds_read_docs = flow.run_local_server(port=0)
+        # Save the credentials for the next run
+        with open('secrets/token_read_docs.pickle', 'wb') as token:
+            pickle.dump(creds_read_docs, token)
+
+    service_docs = build('docs', 'v1', credentials=creds_read_docs)
+
+    # Find ids of all Google docs in the raw Serge folder
     while True:
         response = service_drive.files().list(q="name contains 'Raw_Document'",
                                               spaces='drive',
@@ -101,18 +127,11 @@ def run():
             file_ids.append(file_id)
         page_token = response.get('nextPageToken', None)
         if page_token is None:
-            break
+            break 
 
-    # Enumerate over Google doc ids and fetch content
-    store = file.Storage('secrets/token.json')
-    creds_doc = store.get()
-    if not creds_doc or creds_doc.invalid:
-        flow_doc = client.flow_from_clientsecrets('secrets/credentials.json', SCOPES_DOC)
-        creds_doc = tools.run_flow(flow_doc, store)
-    service_docs = discovery.build('docs', 'v1', http=creds_doc.authorize(Http()), discoveryServiceUrl=DISCOVERY_DOC)
     for file_id in file_ids:
         result = service_docs.documents().get(documentId=file_id).execute()
-        content = read_strucutural_elements(result.get('body').get('content'))
+        content = read_structural_elements(result.get('body').get('content'))
         title = result.get('title')
         filename = f"{ROOT_PATH}/shared_directory/en/{title}.json"
         with open(filename, 'w') as outfile:
