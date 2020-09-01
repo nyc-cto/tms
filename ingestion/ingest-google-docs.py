@@ -27,7 +27,7 @@ def git_push():
     if repo.git.diff(t):
         repo.index.commit(COMMIT_MESSAGE)
         print("Pushing files to shared repository")
-        repo.git.push('origin', 'feature_docs_api')
+        repo.git.push('origin', 'master')
         print("Push successful")
     else:
         print("No changes detected")
