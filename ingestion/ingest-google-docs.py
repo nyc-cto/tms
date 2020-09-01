@@ -125,7 +125,6 @@ def run():
         for file_content in response.get('files', []):
             # Process change
             file_id = file_content.get('id')
-            print('Found file: %s (%s)' % (file_content.get('name'), file_id))
             file_ids.append(file_id)
         page_token = response.get('nextPageToken', None)
         if page_token is None:
