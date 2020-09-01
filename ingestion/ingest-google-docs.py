@@ -23,8 +23,9 @@ COMMIT_MESSAGE = 'Update shared repository'
 def git_push():
     repo = Repo(GIT_REPO_PATH)
     repo.index.add(["shared_directory"])
-    repo.index.commit(COMMIT_MESSAGE)
-    repo.git.push('origin', 'feature_docs_api') 
+    if repo.git.diff(t):
+        repo.index.commit(COMMIT_MESSAGE)
+        repo.git.push('origin', 'feature_docs_api') 
 
 def read_paragraph_element(element):
     """Returns the text in the given ParagraphElement.
