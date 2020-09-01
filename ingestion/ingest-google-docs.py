@@ -22,10 +22,15 @@ COMMIT_MESSAGE = 'Update shared repository'
 
 def git_push():
     repo = Repo(GIT_REPO_PATH)
+    t = repo.head.commit.tree
     repo.index.add(["shared_directory"])
     if repo.git.diff(t):
         repo.index.commit(COMMIT_MESSAGE)
-        repo.git.push('origin', 'feature_docs_api') 
+        print("Pushing files to shared repository")
+        repo.git.push('origin', 'feature_docs_api')
+        print("Push successful")
+    else:
+        print("No changes detected")
 
 def read_paragraph_element(element):
     """Returns the text in the given ParagraphElement.
@@ -81,7 +86,7 @@ def generate_secrets(token_pickle_path, raw_token_path, credentials_path, scope)
             store = file.Storage(raw_token_path)
             creds = tools.run_flow(flow, store)
         # Save the credentials for the next run
-        with open('secrets/token_read_drive.pickle', 'wb') as token:
+        with open(token_pickle_path, 'wb') as token:
             pickle.dump(creds, token)
     if scope == SCOPE_READ_DRIVE:
         service = build('drive', 'v3', credentials=creds)
@@ -139,10 +144,8 @@ def run():
             d['content'] = content
             json.dump(d, outfile)
 
-    # Push shared repository to Git
-    print("Pushing files to shared repository")  
+    # Push shared repository to Git if any files changed  
     git_push()
-    print("Push successful")
 
 def main():
     while True:
