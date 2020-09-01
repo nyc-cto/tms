@@ -13,10 +13,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from git import Repo
 
-SCOPES_READ_DRIVE = ['https://www.googleapis.com/auth/drive.metadata.readonly']
-SCOPES_READ_DOCS = ['https://www.googleapis.com/auth/documents.readonly']
-DISCOVERY_DOC = ('https://docs.googleapis.com/$discovery/rest?'
-                         'version=v1')
+SCOPE_READ_DRIVE = ['https://www.googleapis.com/auth/drive.metadata.readonly']
+SCOPE_READ_DOCS = ['https://www.googleapis.com/auth/documents.readonly']
 
 ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
 GIT_REPO_PATH = f'{ROOT_PATH}/.git'
@@ -67,54 +65,52 @@ def read_structural_elements(elements):
             text += read_structural_elements(toc.get('content'))
     return text
 
+def generate_secrets(token_pickle_path, raw_token_path, credentials_path, scope):
+    # Generate secrets to access Google API, if not already generated, otherwise load in 
+    creds = None
+    if os.path.exists(token_pickle_path):
+        with open(token_pickle_path, 'rb') as token:
+            creds = pickle.load(token)
+    # If there are no credentials available, let the user log in.
+    if not creds:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = client.flow_from_clientsecrets(credentials_path, scope)
+            store = file.Storage(raw_token_path)
+            creds = tools.run_flow(flow, store)
+        # Save the credentials for the next run
+        with open('secrets/token_read_drive.pickle', 'wb') as token:
+            pickle.dump(creds, token)
+    if scope == SCOPE_READ_DRIVE:
+        service = build('drive', 'v3', credentials=creds)
+    elif scope == SCOPE_READ_DOCS:
+        service = build('docs', 'v1', credentials=creds)
+    else:
+        service = None
+    return service
+
 
 def run():
     # Generate secrets, if not already generated
-    store_read_drive = file.Storage('secrets/token_read_drive.json')
-    creds_read_drive = store_read_drive.get()
-    page_token = None   
-    flow = client.flow_from_clientsecrets('secrets/credentials.json', SCOPES_READ_DRIVE)
-    if os.path.exists('secrets/token_read_drive.pickle'):
-        with open('secrets/token_read_drive.pickle', 'rb') as token:
-            creds_read_drive = pickle.load(token)
-            # If there are no (valid) credentials available, let the user log in.
-    if not creds_read_drive or creds_read_drive.invalid:
-        if creds_read_drive and creds_read_drive.expired and creds_read_drive.refresh_token:
-            creds_read_drive.refresh(Request())
-        else:
-            flow = client.flow_from_clientsecrets('secrets/credentials.json', SCOPES_READ_DRIVE)
-            creds_read_drive = tools.run_flow(flow, store)
-        # Save the credentials for the next run
-        with open('secrets/token_read_drive.pickle', 'wb') as token:
-            pickle.dump(creds_read_drive, token)
-    service_drive = build('drive', 'v3', credentials=creds_read_drive)
-    file_ids = []
+    service_drive = generate_secrets(
+        'secrets/token_read_drive.pickle',
+        'secrets/token_read_drive.json',
+        'secrets/credentials.json',
+        SCOPE_READ_DRIVE
+        )
+    service_docs = generate_secrets(
+        'secrets/token_read_docs.pickle',
+        'secrets/token_read_docs.json',
+        'secrets/credentials.json',
+        SCOPE_READ_DOCS
+        )
 
-    # Enumerate over Google doc ids and fetch content
-    creds_read_docs = None
-    # if not creds_read_docs or creds_read_docs.invalid:
-    #     flow_doc = client.flow_from_clientsecrets('secrets/credentials.json', SCOPES_READ_DOCS)
-    #     creds_read_docs = tools.run_flow(flow_doc, store)
-    # service_docs = discovery.build('docs', 'v1', http=creds_read_docs.authorize(Http()), discoveryServiceUrl=DISCOVERY_DOC)
-
-    if os.path.exists('secrets/token_read_docs.pickle'):
-        with open('secrets/token_read_docs.pickle', 'rb') as token:
-            creds_read_docs = pickle.load(token)
-        # If there are no (valid) credentials available, let the user log in.
-    if not creds_read_docs or not creds_read_docs.valid:
-        if creds_read_docs and creds_read_docs.expired and creds_read_docs.refresh_token:
-            creds_read_docs.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'secrets/credentials.json', SCOPES_READ_DOCS)
-            creds_read_docs = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open('secrets/token_read_docs.pickle', 'wb') as token:
-            pickle.dump(creds_read_docs, token)
-
-    service_docs = build('docs', 'v1', credentials=creds_read_docs)
 
     # Find ids of all Google docs in the raw Serge folder
+    print("Finding documents")
+    file_ids = []
+    page_token = None
     while True:
         response = service_drive.files().list(q="name contains 'Raw_Document'",
                                               spaces='drive',
@@ -129,6 +125,8 @@ def run():
         if page_token is None:
             break 
 
+    print("Obtaining document contents")
+    # For each file, get contents
     for file_id in file_ids:
         result = service_docs.documents().get(documentId=file_id).execute()
         content = read_structural_elements(result.get('body').get('content'))
@@ -143,6 +141,7 @@ def run():
     # Push shared repository to Git
     print("Pushing files to shared repository")  
     git_push()
+    print("Push successful")
 
 def main():
     while True:
