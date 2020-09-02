@@ -4,8 +4,6 @@ import argparse
 import os
 import sys
 
-# TODO: rename dir from ts--> translation_service
-
 # TODO: Update with complete list of languages; possibly in a separate file (currently only NYC required languages)
 # Target language ISO-639-1 identifier (ex. "es")
 SUPPORTED_LANGUAGES = {'es', 'zh', 'ru', 'bn', 'ht', 'ko', 'ar', 'fr', 'ur', 'pl'}
