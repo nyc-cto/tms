@@ -1,123 +1,126 @@
-import argparse
 import os
 
-PO_LINE_LEN = 80
-LOCALIZED_DIR = "localized"
+PO_LINE_LEN = 80  # Max line length .po files prefer for printing on first line of msgstr
 
 
-def localize_all_po_files(in_path, out_path, lang):
-    """Finds all .po files in a directory and localizes them in the given language.
-
-        Args:
-            in_path: The filepath for the directory with the .po files
-            out_path: (optional) The filepath to write the localized .po files to
-            lang: The target language (ISO-639-1 identifier) for localization
-    """
-    # TODO: Decide where to store & naming format for localized files
-
-    # Create directory for localized files to be placed in if not provided
-    if out_path is None:
-        out_path = os.path.join(in_path, LOCALIZED_DIR)
-        if not os.path.exists(out_path):
-            os.makedirs(out_path)
-
-    for f in os.listdir(in_path):
-        if f.endswith('.po'):
-            localize_po_file(in_path, out_path, f, lang)
-
-
-def localize_po_file(in_path, out_path, po_file, lang):
-    """Parses the given po file to find all msgid(untranslated string)
-        and add lang translation in corresponding msgstr(translated string)
+def localize_po_file(in_path, out_path, po_file, target_lang_iso, translator):
+    """Parses the given .po file to find all msgid(untranslated string)
+        and add lang translation in corresponding msgstr(translated string).
+        See https://www.gnu.org/software/gettext/manual/html_node/PO-Files.html
+        for detail on the structure of a .po file.
 
         Args:
-            in_path: The filepath for the directory with the .po files
-            out_path: The filepath to write the localized .po files to
-            po_file: The filename of the .po file to localize
-            lang: The target language (ISO-639-1 identifier) for localization
+            in_path: The filepath for the directory with the .po files.
+            out_path: The filepath to write the localized .po files to.
+            po_file: The filename of the .po file to localize.
+            target_lang_iso: The target language (ISO-639-1 identifier) for localization.
+            translator: The Translator object to use to translate texts.
     """
     # Create output file name based on po_file and language code
-    localized_po_file = po_file[:-len('.po')] + "_" + lang + '.po'
     po_filepath = os.path.join(in_path, po_file)
-    localized_po_filepath = os.path.join(out_path, localized_po_file)
+    localized_po_filepath = os.path.join(out_path, po_file)
 
-    # Write to localized po file as we read the original po file and translate
-    with open(localized_po_filepath, 'w') as wf:
+    # Parse the .po file
+    po_lines, po_msgstr_texts = parse_po_lines(po_filepath)
 
-        with open(po_filepath) as rf:
-            msgid_started = False
-            msgstr_started = False
+    # Translate the msgstr lines
+    localized_texts = translator.translate(po_msgstr_texts, target_lang_iso)
 
-            text = ""
-            for line in rf:
-                clean_line = line.strip()  # remove any extra whitespace
-
-                # Find where the msgid starts
-                if clean_line.startswith("msgid"):
-                    msgid_started = True
-                    clean_line = clean_line[len("msgid "):].strip()
-
-                # When starting msgstr, ending msgid
-                if clean_line.startswith("msgstr"):
-                    msgid_started = False
-                    msgstr_started = True
-
-                # Add any parts of msgid to the text
-                if msgid_started:
-                    text += clean_line.strip('"')
-                    # TODO: Currently creates a single long string for translation,
-                    # but perhaps this should be separated as in the original?
-                    # Note that separation would cause issues with the translation quality.
-
-                # Write all lines to localized file
-                if msgstr_started:
-                    # Get and write the translation
-
-                    loc_text = translate_text(text, lang)
-
-                    if len('msgstr ""') + len(loc_text) < 80:
-                        # Small enough to write on a single line
-                        wf.write('msgstr "' + loc_text + '"\n')
-                    else:
-                        # Write on multiple lines
-                        wf.write(line)
-                        wf.write('"' + loc_text + '"\n')
-                    text = ""  # reset text
-                    msgstr_started = False
-                else:
-                    # Write original line
-                    wf.write(line)
+    # Write the localized/translated .po file
+    write_po_localized_file(localized_po_filepath, po_lines, localized_texts)
 
 
-def translate_text(text, lang):
-    """Translates string to the given language.
+# TODO: possibly update to handle more complex types of .po files (IF Serge makes them)
+#       In particular, msgid_plural/msgstr_plural
+#       May want to create a class to handle the data in a more structured way
+def parse_po_lines(po_filepath):
+    """Parses the .po file to grab each line and find the text to translate.
 
         Args:
-            text: An untranslated string
-            lang: The target language (ISO-639-1 identifier) for localization
+            po_filepath: The filepath for the .po file to parse.
 
         Returns:
-            The localized string
+            po_lines: A list of every line as it appears exactly in the .po file.
+            po_msgstr_texts: A list of the concatenated texts found in each
+                            msgid that need to be translated into the corresponding msgstr.
+
     """
-    # Don't translate empty strings, just return an empty string
-    if text == "":
-        return ""
+    po_lines = []  # All original file lines
+    po_msgstr_texts = []  # Untranslated texts
 
-    # TODO: call Google Translate or other translation service; for now, uppercase placeholder
-    return text.upper()
+    with open(po_filepath) as rf:
+        msgid_started = False
+        msgstr_started = False
+
+        text = ""
+        for line in rf:
+            clean_line = line.strip()  # remove any extra whitespace
+
+            # Find where the msgid starts
+            if clean_line.startswith("msgid"):
+                msgid_started = True
+                clean_line = clean_line[len("msgid "):].strip()
+
+            # When starting msgstr, ending msgid
+            if clean_line.startswith("msgstr"):
+                msgid_started = False
+                msgstr_started = True
+
+            # Add any parts of msgid to the text
+            if msgid_started:
+                text += clean_line.strip('"')
+                # TODO: Currently creates a single long string for translation,
+                #   but perhaps this should be separated as in the original?
+                #   Note that separation would cause issues with the translation quality.
+
+            # Add all lines to the po_lines list
+            if msgstr_started:
+
+                # Add to po_lines
+                po_lines.append(line)
+
+                # Also add the text po_msgstr_texts list to be translated
+                po_msgstr_texts.append(text)
+
+                text = ""  # Reset text
+                msgstr_started = False
+            else:
+                # Not a msgstr, so just add to po_lines
+                po_lines.append(line)
+
+    return po_lines, po_msgstr_texts
 
 
-def main():
-    """Localizes all .po files in a directory"""
-    # TODO: Write a wrapper for all of ts file structure that auto-grabs ISO lang codes
-    parser = argparse.ArgumentParser(description='Localizes all .po files in a directory')
-    parser.add_argument("--input", help="filepath for input directory", required=True)
-    parser.add_argument("--output", help="filepath for output directory", required=False)
-    parser.add_argument('--lang', type=str,
-                        help='target language ISO-639-1 identifier (ex. "es")', required=True)
-    args = parser.parse_args()
-    localize_all_po_files(args.input, args.output, args.lang)
+def write_po_localized_file(localized_po_filepath, po_lines, localized_texts):
+    """Writes a localized version of a .po file.
 
+        Args:
+            localized_po_filepath: The filepath to write the localized .po to.
+            po_lines: The original lines in the unlocalized .po file.
+            localized_texts: The localized msgstr lines only from the .po file.
+    """
 
-if __name__ == "__main__":
-    main()
+    current_localized_line = 0
+
+    with open(localized_po_filepath, 'w') as wf:
+
+        for line in po_lines:
+
+            # if line.startswith("msgstr"):
+            if line.strip().startswith("msgstr"):
+                # Need to use the localized msgstr instead of the original empty one
+
+                if len('msgstr ""') + len(localized_texts[current_localized_line]) < 80:
+                    # Small enough to write on a single line
+                    wf.write('msgstr "' + localized_texts[current_localized_line] + '"\n')
+                else:
+                    # Write on multiple lines
+                    wf.write(line)
+                    wf.write('"' + localized_texts[current_localized_line] + '"\n')
+
+                # Increment the localized line
+                current_localized_line += 1
+
+            else:
+                # Write out the line as-is (not a msgstr translation line)
+                wf.write(line)

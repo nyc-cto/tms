@@ -1,15 +1,16 @@
 # Usage
 
-This program can be used to localize all the .po files in a directory.
+This program can be used to localize all the .po files from an input project directory into an output project directory.
 It takes the following arguments:
-- `--input`: the input filepath where the .po files are located.
-- `--output`: (optional) the output filepath where you would like the localized files to be written to. If specified, must already exist. If not, will create a `localized` directory inside the input directory.
-- `--lang`: the ISO-639-1 language code for the target localization
+- `--input_dir`: The filepath for the input project directory. This input directory must have a subdirectory structure based on language ISO-639-1 code for each localization, with any .po files to localize inside (ex. `input_dir/es/untranslated_file.po` for Spanish localization).
+- `--output_dir`: The filepath for the output project directory where the localization subdirectories and their localized files should be written to.
+- `--translation_api`: The translation API to use ("google" for Google Translate, "caps" for capitalization).
+- `--google_key_path`: The path for the Google Service Account JSON keyfile.
 
 ## Examples
 
 ```
-python po_localizer.py --input /path/to/input_dir/ --output /path/to/output_dir/ --lang es
+python project_localizer.py --input_dir /path/to/input_dir/ --output_dir /path/to/output_dir/ --translation_api caps
 
-python po_localizer.py --input /path/to/input_dir/ --lang ru
+python project_localizer.py --input_dir /path/to/input_dir/ --output_dir /path/to/output_dir/ --translation_api google --google_key_path /path/to/google_service_key.json
 ```
