@@ -28,11 +28,7 @@ class CapsTranslator(Translator):
                 A list of the capitalized strings.
         """
 
-        capitalized_texts = []
-        for text in texts_list:
-            capitalized_texts.append(text.upper())
-
-        return capitalized_texts
+        return [text.upper() for text in texts_list]
 
 
 class GoogleTranslator(Translator):

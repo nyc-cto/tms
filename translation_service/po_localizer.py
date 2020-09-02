@@ -110,7 +110,7 @@ def write_po_localized_file(localized_po_filepath, po_lines, localized_texts):
             if line.strip().startswith("msgstr"):
                 # Need to use the localized msgstr instead of the original empty one
 
-                if len('msgstr ""') + len(localized_texts[current_localized_line]) < 80:
+                if len('msgstr ""') + len(localized_texts[current_localized_line]) < PO_LINE_LEN:
                     # Small enough to write on a single line
                     wf.write('msgstr "' + localized_texts[current_localized_line] + '"\n')
                 else:

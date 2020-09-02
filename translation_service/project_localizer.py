@@ -1,5 +1,5 @@
-import po_localizer
-import translators
+from po_localizer import localize_po_file
+from translators import TranslatorFactory
 import argparse
 import os
 import sys
@@ -26,7 +26,7 @@ def localize_project(input_dir, output_dir, translation_api, google_key_path):
     """
 
     #  Create a translator object based on the translation_api
-    translator = translators.TranslatorFactory.get_translator(translation_api, google_key_path)
+    translator = TranslatorFactory.get_translator(translation_api, google_key_path)
 
     # Get a list of all the target language subdir names for this project
     # NOTE: will skip any subdir that is not a supported target language ISO code
@@ -42,15 +42,13 @@ def localize_project(input_dir, output_dir, translation_api, google_key_path):
         # Get a list of all .po files in this target language subdir
         po_files = [file for file in os.listdir(input_target_lang_subdir) if file.endswith('.po')]
 
-        test_po_files = [file for file in os.listdir(input_target_lang_subdir)]
-
         # Create output subdir
         output_target_lang_subdir = create_output_localized_subdir(output_dir, target_lang_iso)
 
         # Localize each file in the subdir and write to the output subdir
         for po_file in po_files:
 
-            po_localizer.localize_po_file(input_target_lang_subdir, output_target_lang_subdir,
+            localize_po_file(input_target_lang_subdir, output_target_lang_subdir,
                                           po_file, target_lang_iso, translator)
 
 
@@ -94,7 +92,8 @@ def validate_args(input_dir, output_dir, translation_api, google_key_path):
 
     # Check that the translation API is supported
     if translation_api not in SUPPORTED_TRANSLATION_APIS:
-        sys.exit("ERROR: Translation API is not supported. Supported APIs include: google, caps.")
+        sys.exit("ERROR: Translation API is not supported. Supported APIs include: {}.".format(
+            SUPPORTED_TRANSLATION_APIS))
 
     if translation_api == "google" and google_key_path is None:
         sys.exit("ERROR: To use the Google Translate API, you must include the google_key_path.")
