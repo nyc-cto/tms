@@ -14,3 +14,7 @@ python project_localizer.py --input_dir /path/to/input_dir/ --output_dir /path/t
 
 python project_localizer.py --input_dir /path/to/input_dir/ --output_dir /path/to/output_dir/ --translation_api google --google_key_path /path/to/google_service_key.json
 ```
+
+## Developer Notes
+
+Please use requirements.txt to install appropriate packages in your env/venv.
