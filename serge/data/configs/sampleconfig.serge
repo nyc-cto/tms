@@ -12,7 +12,7 @@ sync
         # plugin for more information.
         data
         {
-            project_id                          429aefb0-7a9d-4af2-a6a8-12c449936cb4
+            project_id                          sample-id-here
             base_url                            https://smartcat.ai
 
             /*
@@ -20,7 +20,7 @@ sync
             your `Settings > API` page once you sign into
             your Smartcat account.
             */
-            account_id                          efa2ee39-45ac-425b-b016-d087e3f2c3a4
+            account_id                          another-sample-id-here
 
             /*
             Go to `Settings > API` page in your account,
@@ -28,7 +28,7 @@ sync
             e.g. 'Serge', and the auto-generated secret part
             of the key is what needs to be added here.
             */
-            token                               2_V2okFU86uYPzoR39A3odkxW92
+            token                               2_sampletoken
 
             /*
             [OPTIONAL] Enable debug mode if requested by Smartcat support.
