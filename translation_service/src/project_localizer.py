@@ -7,7 +7,6 @@ import sys
 # TODO: Update with complete list of languages; possibly in a separate file (currently only NYC required languages)
 # Target language ISO-639-1 identifier (ex. "es")
 SUPPORTED_LANGUAGES = {'es', 'zh', 'ru', 'bn', 'ht', 'ko', 'ar', 'fr', 'ur', 'pl'}
-SUPPORTED_TRANSLATION_APIS = {"google", "caps"}
 
 
 def localize_project(input_dir, output_dir, translation_api, google_key_path):
@@ -71,15 +70,12 @@ def create_output_localized_subdir(output_dir, target_lang_iso):
     return output_target_lang_subdir
 
 
-def validate_args(input_dir, output_dir, translation_api, google_key_path):
+def validate_args(input_dir, output_dir):
     """Validates the arguments for this program. Exits with message if any invalid args.
 
         Args:
             input_dir: Filepath for the input file.
             output_dir: Filepath for the output directory.
-            translation_api: Translation API to use ("google" for Google Translate,
-                            "caps" for capitalization (default)).
-            google_key_path: Path for the Google Service Account JSON keyfile.
     """
 
     # Check input file directory
@@ -89,14 +85,6 @@ def validate_args(input_dir, output_dir, translation_api, google_key_path):
     # Check output file directory
     if not os.path.isdir(output_dir):
         sys.exit("ERROR: Output directory does not exist.")
-
-    # Check that the translation API is supported
-    if translation_api not in SUPPORTED_TRANSLATION_APIS:
-        sys.exit("ERROR: Translation API is not supported. Supported APIs include: {}.".format(
-            SUPPORTED_TRANSLATION_APIS))
-
-    if translation_api == "google" and google_key_path is None:
-        sys.exit("ERROR: To use the Google Translate API, you must include the google_key_path.")
 
 
 def main():
@@ -112,8 +100,9 @@ def main():
 
     args = parser.parse_args()
 
-    # Validate that all arguments are correct before running program
-    validate_args(args.input_dir, args.output_dir, args.translation_api, args.google_key_path)
+    # Validate arguments for this program
+    # Note that arguments for the Translator (translation_api and google_key_path) will be validated separately
+    validate_args(args.input_dir, args.output_dir)
 
     # Normalize paths
     args.input_dir, args.output_dir = os.path.normpath(args.input_dir), os.path.normpath(args.output_dir)

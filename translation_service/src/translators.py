@@ -1,9 +1,12 @@
 # Base class for a membership check
+import sys
 from abc import ABCMeta, abstractmethod
 from google.cloud import translate_v2
 
 # Cache the translators created to avoid reinitializing
 CACHED_TRANSLATORS = {}
+
+SUPPORTED_TRANSLATION_APIS = {"google", "caps"}
 
 
 class Translator:
@@ -69,12 +72,44 @@ class GoogleTranslator(Translator):
 class TranslatorFactory:
 
     @staticmethod
-    def get_translator(translation_api, google_key_path=None):
+    def get_translator(translation_api="caps", google_key_path=None):
+        """Gets the appropriate Translator from CACHED_TRANSLATORS, or creates a new one if needed.
+
+        Args:
+            translation_api: Translation API to use ("google" for Google Translate,
+                            "caps" for capitalization (default)).
+            google_key_path: Path for the Google Service Account JSON keyfile.
+
+        Returns:
+            The Translator object based on the translation_api argument.
+
+        """
+
+        # Validate the arguments for building a Translator
+        validate_translator_args(translation_api, google_key_path)
+
         if translation_api not in CACHED_TRANSLATORS:
             if translation_api == "google":
                 CACHED_TRANSLATORS[translation_api] = GoogleTranslator(google_key_path)
             else:
-                # Default is to capitalize the text  # TODO: Change to proper default later
+                # Default is to capitalize the text
                 CACHED_TRANSLATORS[translation_api] = CapsTranslator()
         return CACHED_TRANSLATORS[translation_api]
 
+
+def validate_translator_args(translation_api, google_key_path):
+    """Validates the arguments for creating a Translator. Exits with message if any invalid args.
+
+        Args:
+            translation_api: Translation API to use ("google" for Google Translate,
+                            "caps" for capitalization (default)).
+            google_key_path: Path for the Google Service Account JSON keyfile.
+    """
+
+    # Check that the translation API is supported
+    if translation_api not in SUPPORTED_TRANSLATION_APIS:
+        sys.exit("ERROR: Translation API is not supported. Supported APIs include: {}.".format(
+            SUPPORTED_TRANSLATION_APIS))
+
+    if translation_api == "google" and google_key_path is None:
+        sys.exit("ERROR: To use the Google Translate API, you must include the google_key_path.")
