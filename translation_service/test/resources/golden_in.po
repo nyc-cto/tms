@@ -1,0 +1,15 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
+"Generated-By: Serge 1.4\n"
+#. /about
+#: File: sample.json
+#: ID: a5eea87543a1a8fad51039d72f407011
+msgid "Let's get things translated!"
+msgstr ""
+
+msgid "We can use machine translation to get many localizations "
+"done automatically and quickly."
+msgstr ""
