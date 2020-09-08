@@ -1,0 +1,21 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ru\n"
+"Generated-By: Serge 1.4\n"
+
+#. /content
+#: File: Raw_Document_1.json
+#: ID: 0cfd23128f3a51999960ff75a6c3616b
+msgid ""
+"We use technology to make New York ready for the future.\n"
+"\n"
+"We can adapt to change and unexpected situations.\n"
+"\n"
+"We are diverse and agile.\n"
+"\n"
+"This is a new change.\n"
+"\n"
+"This is another change.\n"
+msgstr ""
