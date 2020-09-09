@@ -3,7 +3,7 @@ import json
 import pickle
 import os.path
 from time import sleep
-from apiclient import discovery
+from googleapiclient import discovery
 from httplib2 import Http
 from oauth2client import client
 from oauth2client import file
@@ -134,7 +134,7 @@ def run():
     # For each file, get contents
     for file_id in file_ids:
         result = service_docs.documents().get(documentId=file_id).execute()
-        content = read_structural_elements(result.get('body').get('content'))
+        content = result.get('body').get('content')
         title = result.get('title')
         filename = f"{ROOT_PATH}/shared_directory/en/{title}.json"
         with open(filename, 'w') as outfile:
