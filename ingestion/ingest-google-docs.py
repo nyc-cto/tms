@@ -27,7 +27,8 @@ def git_push():
     if repo.git.diff(t):
         repo.index.commit(COMMIT_MESSAGE)
         print("Pushing files to shared repository")
-        repo.git.push('origin', 'master')
+        branch_name = repo.active_branch.name
+        repo.git.push('origin', branch_name)
         print("Push successful")
     else:
         print("No changes detected")
