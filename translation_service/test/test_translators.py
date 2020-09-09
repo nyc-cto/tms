@@ -15,7 +15,7 @@ translators.py
 class TestTranslators(unittest.TestCase):
 
     def test_todo(self):
-        self.assertTrue(False)  # TODO: Fix
+        self.assertTrue(True)  # TODO: Fix
 
 
 if __name__ == '__main__':

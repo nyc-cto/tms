@@ -102,7 +102,8 @@ def write_po_localized_file(localized_po_filepath, po_lines, localized_texts):
 
     current_localized_line = 0
 
-    with open(localized_po_filepath, 'w') as wf:
+    # Write file using unix-style line endings
+    with open(localized_po_filepath, 'w', newline='') as wf:
 
         for line in po_lines:
 
