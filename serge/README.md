@@ -80,3 +80,17 @@ Eventually (hopefully this weekend) we will bring the Python code and its depend
 
 9. To tear down just run `exit` inside of the shell session. And you can ctrl+c to stop the container from running.
 
+
+### Troubleshooting
+
+#### Directory Permissions issue. It may look like the following:
+```
+Deleting directory '/var/serge/vcs/'
+Creating directory '/var/serge/vcs/'
+fatal: Could not get current working directory: No such file or directory
+Exception occurred while processing configuration file:
+Exit code: -128; last error: No such file or directory
+```
+The fix for this is to run your command with `sudo`.
+`sudo serge pull sampleconfig.serge --initialize` which will give your environment the right privileges to create/destroy directories.
+
