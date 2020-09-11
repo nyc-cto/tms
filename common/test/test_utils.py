@@ -1,16 +1,13 @@
-import unittest
-import sys
 import io
-import tempfile
-import shutil
 import os
+import shutil
+import sys
+import tempfile
+import unittest
 from git import Repo
 sys.path.append('src')
 import utils
 
-
-# TODO: SetUp/TearDown to build tempdir with git project with shared_directory to test writing to
-#   each test gets its own subdirectory which is totally clean and unconnected
 
 class TestUtils(unittest.TestCase):
 
