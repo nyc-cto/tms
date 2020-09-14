@@ -4,3 +4,4 @@ __pycache__
 .ts_env
 secrets/
 ingestion/secrets/
+/serge/data/vcs

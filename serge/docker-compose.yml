@@ -6,4 +6,4 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - ./data/:/var/
+      - ./data/:/var/serge/data
