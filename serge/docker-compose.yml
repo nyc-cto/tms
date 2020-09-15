@@ -1,9 +1,0 @@
-version: "3"
-
-services:
-  serge:
-    image: serge
-    stdin_open: true
-    tty: true
-    volumes:
-      - ./data/:/var/

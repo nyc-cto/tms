@@ -4,3 +4,7 @@ __pycache__
 .ts_env
 secrets/
 ingestion/secrets/
+/serge/data/vcs
+/serge/data/ts
+/serge/data/db
+**/.DS_Store
