@@ -16,12 +16,13 @@ COMMIT_MESSAGE = 'Update shared repository'
 
 def git_push():
     repo = Repo(GIT_REPO_PATH)
-    t = repo.head.commit.tree
+    t = repo.active_branch.commit.tree
     repo.index.add(["shared_directory"])
     if repo.git.diff(t):
         repo.index.commit(COMMIT_MESSAGE)
-        print("Pushing files to shared repository")
-        repo.git.push('origin', 'master')
+        branch_name = repo.active_branch.name
+        print(f"Pushing files to shared repository on branch {branch_name}")
+        repo.git.push('origin', branch_name)
         print("Push successful")
     else:
         print("No changes detected")
