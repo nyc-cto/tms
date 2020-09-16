@@ -14,7 +14,7 @@ sync
         {
             executable                          python
             pull_command                        python /translation_service/src/serge_ts_connector.py --mode pull_ts
-            push_command                        python /translation_service/src/serge_ts_connector.py --mode push_ts
+            push_command                        python /translation_service/src/serge_ts_connector.py --mode push_ts --translation_api google --google_key_path /secrets/GoogleKey.json
 
         }
     }

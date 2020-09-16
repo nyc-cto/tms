@@ -37,6 +37,7 @@ COPY ./ingestion/requirements.txt /ingestion/requirements.txt
 RUN pip install -r /translation_service/requirements.txt
 RUN pip install -r /ingestion/requirements.txt
 
+COPY ./secrets /secrets
 COPY ./translation_service /translation_service
 COPY ./ingestion /ingestion
 COPY ./common /common
