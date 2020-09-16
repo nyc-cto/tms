@@ -63,7 +63,7 @@ sync
             # (BOOLEAN) [OPTIONAL] should the newly generated
             # files be added to the remote repository automatically?
             # (YES or NO, defaults to NO)
-            add_unversioned         NO
+            add_unversioned         YES
 
             # (STRING) [OPTIONAL] Commit message
             # Default: 'Automatic commit of updated project files'
@@ -93,7 +93,7 @@ jobs
         # YES - active (default)
         # NO - optimizations should be permanently disabled for the job
         # (set this to NO when you want all files to be parsed unconditionally)
-        optimizations               YES
+        optimizations               NO
 
         # (BOOLEAN) [OPTIONAL] Is the job active?
         # YES - active (default)

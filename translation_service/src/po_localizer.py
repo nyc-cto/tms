@@ -51,17 +51,24 @@ def parse_po_lines(po_filepath):
     with open(po_filepath) as rf:
         msgid_started = False
         msgstr_started = False
+        msgstr_empty = False
 
         text = ""
+        msgstr_text = ""
         for line in rf:
-            clean_line = line.strip()  # remove any extra whitespace
+
+            # Add all lines to the po_lines list
+            po_lines.append(line)
+
+            # Process the line for msgid/msgstr by removing any extra whitespace
+            clean_line = line.strip()
 
             # Find where the msgid starts
             if clean_line.startswith("msgid"):
                 msgid_started = True
                 clean_line = clean_line[len("msgid "):].strip()
 
-            # When starting msgstr, ending msgid
+            # When starting msgstr, end the msgid
             if clean_line.startswith("msgstr"):
                 msgid_started = False
                 msgstr_started = True
@@ -73,20 +80,35 @@ def parse_po_lines(po_filepath):
                 #   but perhaps this should be separated as in the original?
                 #   Note that separation would cause issues with the translation quality.
 
-            # Add all lines to the po_lines list
+            # Process the msgstr, which may or may not be empty
             if msgstr_started:
 
-                # Add to po_lines
-                po_lines.append(line)
+                # If there is no message, follow previous method (but wait until done)
+                # Need a blank line OR end of file... yeesh.
 
-                # Also add the text po_msgstr_texts list to be translated
+                # Add the text po_msgstr_texts list to be translated
                 po_msgstr_texts.append(text)
 
                 text = ""  # Reset text
                 msgstr_started = False
-            else:
-                # Not a msgstr, so just add to po_lines
-                po_lines.append(line)
+
+                #
+
+
+            # # Add all lines to the po_lines list
+            # if msgstr_started:
+            #
+            #     # Add to po_lines
+            #     po_lines.append(line)
+            #
+            #     # Also add the text po_msgstr_texts list to be translated
+            #     po_msgstr_texts.append(text)
+            #
+            #     text = ""  # Reset text
+            #     msgstr_started = False
+            # else:
+            #     # Not a msgstr, so just add to po_lines
+            #     po_lines.append(line)
 
     return po_lines, po_msgstr_texts
 
