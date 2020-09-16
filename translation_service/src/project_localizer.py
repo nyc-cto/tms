@@ -132,7 +132,7 @@ def main():
     parser.add_argument("--output_dir", help="filepath for output project directory", required=True)
     parser.add_argument('--translation_api', type=str,
                         help='translation API to use ("google" for Google Translate,'
-                             ' "caps" for capitalization)', required=True)
+                             ' "caps" for capitalization). Default=caps', default='caps')
     parser.add_argument('--google_key_path', type=str,
                         help='path for the Google Service Account JSON keyfile', required=False)
 
