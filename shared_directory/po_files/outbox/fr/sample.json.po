@@ -1,0 +1,19 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"Generated-By: Serge 1.4\n"
+
+#. /about
+#: File: sample.json
+#: ID: db2443963b65964570ac8105f4b6a062
+msgid ""
+"Ensuring high-quality, affordable, and safe internet service for all New "
+"Yorkers.\r\n"
+"Delivering government services online to make government work better for "
+"everyone.\r\n"
+"Making New York City the place where new ideas are applied to improve lives.\r\n"
+"Advancing laws, rules, and plans that promote the public good and protect "
+"New Yorkers’ digital rights.\r\n"
+msgstr "ENSURING HIGH-QUALITY, AFFORDABLE, AND SAFE INTERNET SERVICE FOR ALL NEW YORKERS.\r\nDELIVERING GOVERNMENT SERVICES ONLINE TO MAKE GOVERNMENT WORK BETTER FOR EVERYONE.\r\nMAKING NEW YORK CITY THE PLACE WHERE NEW IDEAS ARE APPLIED TO IMPROVE LIVES.\r\nADVANCING LAWS, RULES, AND PLANS THAT PROMOTE THE PUBLIC GOOD AND PROTECT NEW YORKERS’ DIGITAL RIGHTS.\r\n"
