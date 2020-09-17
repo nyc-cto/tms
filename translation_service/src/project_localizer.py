@@ -1,4 +1,4 @@
-from po_localizer import localize_po_file
+from po_file import PoFile
 from translators import TranslatorFactory
 import argparse
 import os
@@ -49,6 +49,33 @@ def localize_project(input_dir, output_dir, translation_api='caps', google_key_p
 
             localize_po_file(input_target_lang_subdir, output_target_lang_subdir,
                                           po_file, target_lang_iso, translator)
+
+
+def localize_po_file(in_dir, out_dir, po_file, target_lang_iso, translator):
+    """Creates a localized version of hte po_file
+
+        Args:
+            in_dir: The filepath for the directory with the .po files.
+            out_dir: The filepath to write the localized .po files to.
+            po_file: The filename of the .po file to localize.
+            target_lang_iso: The target language (ISO-639-1 identifier) for localization.
+            translator: The Translator object to use to translate texts.
+    """
+    # Create output file name based on po_file and language code
+    po_filepath = os.path.join(in_dir, po_file)
+    localized_po_filepath = os.path.join(out_dir, po_file)
+
+    # Create a PoFile object
+    po = PoFile(po_filepath)
+
+    # Parse the po file
+    po.parse_po_file()
+
+    # Translate the po file
+    po.translate_po_file(target_lang_iso, translator)
+
+    # Write the localized/translated .po file
+    po.write_localized_po_file(localized_po_filepath)
 
 
 def create_output_localized_subdir(output_dir, target_lang_iso):
@@ -105,7 +132,7 @@ def main():
     parser.add_argument("--output_dir", help="filepath for output project directory", required=True)
     parser.add_argument('--translation_api', type=str,
                         help='translation API to use ("google" for Google Translate,'
-                             ' "caps" for capitalization)', required=True)
+                             ' "caps" for capitalization). Default=caps', default='caps')
     parser.add_argument('--google_key_path', type=str,
                         help='path for the Google Service Account JSON keyfile', required=False)
 
