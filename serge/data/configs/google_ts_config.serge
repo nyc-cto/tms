@@ -127,7 +127,7 @@ jobs
         # (ARRAY) Destination (generated) languages.
         # This list should not include the source language.
         # There should be at least one destination language defined.
-        destination_languages       fr
+        destination_languages       es
 
         # (STRING) Path to source files relative to the config file
         # ('.' here is the current dir)
@@ -240,7 +240,7 @@ jobs
         # (but you will likely need to implement your own fallback logic).
         # YES - leave the string blank
         # NO - fall back to source string (default)
-        leave_untranslated_blank    NO
+        leave_untranslated_blank    YES
 
         # (STRING) DBI-compatible connection string
         # Supported drivers: SQLite, MySQL and Postgres
