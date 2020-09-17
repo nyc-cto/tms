@@ -11,7 +11,7 @@ SCOPE_DRIVE = ['https://www.googleapis.com/auth/drive']
 SCOPE_DOCS = ['https://www.googleapis.com/auth/documents']
 
 ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
-GIT_REPO_PATH = f'{ROOT_PATH}/.git'
+GIT_REPO_PATH = '/.git' if ROOT_PATH == '/' else f'{ROOT_PATH}/.git'
 COMMIT_MESSAGE = 'Update shared repository'
 
 def git_push():
