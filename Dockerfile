@@ -28,6 +28,7 @@ RUN sudo ln -s /serge-1.4/bin/serge /usr/local/bin/serge
 
 ENV PATH="/serge-1.4/bin:${PATH}"
 ENV PERL5LIB="/serge-1.4/lib${PERL5LIB:+:}${PERL5LIB}"
+ENV GIT_SSH_COMMAND='ssh -i /secrets/git_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=no'
 
 # We copy just the requirements.txt first to leverage Docker cache
 COPY ./translation_service/requirements.txt /translation_service/requirements.txt
@@ -38,6 +39,7 @@ RUN pip install -r /translation_service/requirements.txt
 RUN pip install -r /ingestion/requirements.txt
 
 COPY ./secrets /secrets
+RUN chmod 700 /secrets/git_key
 COPY ./translation_service /translation_service
 COPY ./ingestion /ingestion
 COPY ./common /common
