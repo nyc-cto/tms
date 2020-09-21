@@ -63,7 +63,7 @@ sync
 
             # (STRING) Path to a single remote repository
             # to sync with local `data_dir` folder
-            remote_path             https://github.com/as1729/random-json-content.git
+            remote_path             https://github.com/nyc-cto/tms.git
             # --- OR ---
             # (MAP) A key-value list of local subfolders to create and their
             # corresponding remote repositories (if the localizable data for the
@@ -149,7 +149,7 @@ jobs
 
         # (STRING) Path to source files relative to the config file
         # ('.' here is the current dir)
-        source_dir                  ../vcs/
+        source_dir                  ../serge/data/vcs/shared_directory/en
 
         # (STRING) [OPTIONAL] Path prefix which will be prepended to the relative file path,
         # allowing gathering multiple files with the same name under the same db_namespace
@@ -208,7 +208,7 @@ jobs
             # plugin for more information.
             data
             {
-                path_matches \/(about|title|description)$
+                path_matches \/(about|wptitle|content|description)$
         #param1             value1
                 #param2             value2
             }
@@ -475,7 +475,7 @@ jobs
         # Allowed macros: same as for the `ts_file_path` parameter (see above)
         # This value has effect only if `output_lang_files` or `output_default_lang_file`
         # parameters are set to YES
-        output_file_path            ../vcs/%FILE%.%LANG%
+        output_file_path            ../serge/data/vcs/shared_directory/%LANG%/%FILE%
 
         # [OPTIONAL] A list of callback plugins that we should load,
         # with the parameters to pass

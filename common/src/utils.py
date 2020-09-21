@@ -31,7 +31,8 @@ def git_push(git_repo_path, commit_message="Update shared repository", enable_pu
         repo.index.commit(commit_message)
         if enable_push:
             log.write(PUSHING_MESSAGE)
-            repo.git.push('origin', 'master')
+            branch_name = repo.active_branch.name
+            repo.git.push('origin', branch_name)
             log.write(PUSH_SUCCESSFUL_MESSAGE)
         else:
             log.write(DEBUGGING_MESSAGE)
