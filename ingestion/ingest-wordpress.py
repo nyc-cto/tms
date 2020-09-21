@@ -3,36 +3,18 @@ import json
 import os.path
 import requests
 
+import sys
+sys.path.append('../common/src')
+import utils
+
 from flask import Flask, has_request_context, request
 from flask_restful import Api, Resource, reqparse
 from git import Repo
 
 
 ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
-GIT_REPO_PATH = f'{ROOT_PATH}/.git'
-COMMIT_MESSAGE = 'Update shared repository'
-
-ENABLE_PUSH = False # Set to false when just testing
 
 # TODO: Unit testing, end-to-end testing
-
-# Push shared repository to Git if any files changed
-# TODO: Make this a shared library with ingest-google-docs
-def git_push():
-    repo = Repo(GIT_REPO_PATH)
-    t = repo.head.commit.tree
-    repo.index.add(["shared_directory"])
-    if repo.git.diff(t):
-        repo.index.commit(COMMIT_MESSAGE)
-        if ENABLE_PUSH:
-            print("Pushing wordpress files to shared repository")
-            repo.git.push('origin', 'master')
-            print("Push successful")
-        else:
-            print("Skipping git push because it's disabled for debugging.")
-    else:
-        print("No changes detected")
-
 
 def write_post(post):
     title = "wp" + str(post['id'])
@@ -60,7 +42,7 @@ def get_posts():
 def do_work():
     for post in get_posts():
         write_post(post)
-    git_push()
+    utils.git_push(utils.PROJECT_ROOT_GIT_PATH, commit_message="Update shared repository: wordpress", enable_push=False)
 
 app = Flask(__name__)
 api = Api(app)
