@@ -1,0 +1,5 @@
+<<<<<<< HEAD
+{"id": 31, "wptitle": {"rendered": "Goodbye"}, "content": {"rendered": "\n<p>Welcome to WordPress. &#8230; This is your second post. Edit or delete it, then start writing!</p>\n", "protected": false}, "link": "http://localhost:8888/2020/09/09/test-new-post/", "modified_gmt": "2020-09-11T19:17:51"}
+=======
+{"id": 31, "wptitle": {"rendered": "Test efen ndf wpokfmrs tdkidd"}, "content": {"rendered": "<p>blah blah blah</p>\n<p>dawerwew<br />\ne<br />\nblah blah blahf<br />\nj<br />\ndawerwewf</p>\n<p>blah blah blah</p>\n<p>dawerwew</p>\n", "protected": false}, "link": "http://localhost:8888/2020/09/09/test-new-post/", "modified_gmt": "2020-09-09T21:50:15"}
+>>>>>>> f304b2460def59ce2b9b8ef6d456ac33c8705294
