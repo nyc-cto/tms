@@ -9,7 +9,7 @@ import sys
 SUPPORTED_LANGUAGES = {'es', 'zh', 'ru', 'bn', 'ht', 'ko', 'ar', 'fr', 'ur', 'pl'}
 
 
-def localize_project(input_dir, output_dir, translation_api, google_key_path):
+def localize_project(input_dir, output_dir, translation_api='caps', google_key_path=None):
     """Finds all target language subdirectories in the input project directory and their nested .po files,
         and creates these subdirectories in the output project directory where it writes the localized
         .po files in the target language using the translation API.
@@ -21,7 +21,7 @@ def localize_project(input_dir, output_dir, translation_api, google_key_path):
             output_dir: Filepath for the output project directory.
             translation_api: Translation API to use ("google" for Google Translate,
                             "caps" for capitalization (default)).
-            google_key_path: Path for the Google Service Account JSON keyfile.
+            google_key_path: Path for the Google Service Account JSON keyfile (not required if not using this API).
     """
 
     #  Create a translator object based on the translation_api
@@ -80,11 +80,22 @@ def validate_args(input_dir, output_dir):
 
     # Check input file directory
     if not os.path.isdir(input_dir):
-        sys.exit("ERROR: Input directory does not exist.")
+        raise InvalidArgumentError("ERROR: Input directory does not exist.")
 
     # Check output file directory
     if not os.path.isdir(output_dir):
-        sys.exit("ERROR: Output directory does not exist.")
+        raise InvalidArgumentError("ERROR: Output directory does not exist.")
+
+
+class InvalidArgumentError(Exception):
+    """Error Handler for invalid arguments.
+
+        Attributes:
+            message: The error message to display
+    """
+
+    def __init__(self, message):
+        self.message = message
 
 
 def main():
@@ -102,7 +113,10 @@ def main():
 
     # Validate arguments for this program
     # Note that arguments for the Translator (translation_api and google_key_path) will be validated separately
-    validate_args(args.input_dir, args.output_dir)
+    try:
+        validate_args(args.input_dir, args.output_dir)
+    except InvalidArgumentError as error:
+        sys.exit(error.message)
 
     # Normalize paths
     args.input_dir, args.output_dir = os.path.normpath(args.input_dir), os.path.normpath(args.output_dir)

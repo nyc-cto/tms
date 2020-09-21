@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=debian:stretch
+ARG BASE_IMAGE=python:3.8.5-buster
 
 FROM ${BASE_IMAGE}
 
@@ -6,7 +6,7 @@ ARG INSTALL_PREREQUISITES="apt-get -qq -y update && apt-get -qq -y install make 
 ARG CLEAN_PREREQUISITES="apt-get -qq -y purge make cpanminus"
 ARG GIT_SHA1="CUSTOM BUILD"
 
-LABEL maintainers="Erik Ogan <erik@change.org>, Igor Afanasyev <igor.afanasyev@gmail.com>"
+LABEL maintainers=" Shannon Ladymon <sladymon@usdigitalresponse.org>, Matt Silver <msilver@usdigitalresponse.org>, Aditya Sridhar <asridhar@usdigitalresponse.org>, Steve Young <syoung@usdigitalresponse.org>"
 LABEL git_sha1="${GIT_SHA1}"
 
 
@@ -16,8 +16,8 @@ RUN set -ex \
     && . /tmp/prereq
 
 
-RUN mkdir /serge
-RUN cd /serge
+WORKDIR /
+
 RUN wget https://github.com/evernote/serge/archive/1.4.zip -O serge-1.4.zip
 RUN unzip serge-1.4.zip
 RUN unlink serge-1.4.zip
@@ -28,3 +28,17 @@ RUN sudo ln -s /serge-1.4/bin/serge /usr/local/bin/serge
 
 ENV PATH="/serge-1.4/bin:${PATH}"
 ENV PERL5LIB="/serge-1.4/lib${PERL5LIB:+:}${PERL5LIB}"
+
+# We copy just the requirements.txt first to leverage Docker cache
+COPY ./translation_service/requirements.txt /translation_service/requirements.txt
+COPY ./ingestion/requirements.txt /ingestion/requirements.txt
+
+
+RUN pip install -r /translation_service/requirements.txt
+RUN pip install -r /ingestion/requirements.txt
+
+COPY ./translation_service /translation_service
+COPY ./ingestion /ingestion
+COPY ./common /common
+COPY ./shared_directory /shared_directory
+COPY ./testing /testing
