@@ -4,13 +4,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: de\n"
 "Generated-By: Serge 1.4\n"
+
 #. /about
 #: File: sample.json
 #: ID: a5eea87543a1a8fad51039d72f407011
 msgid "Let's get things translated!"
 msgstr "LET'S GET THINGS TRANSLATED!"
 
+#. /title
+#: File: sample.json
+#: ID: b5eea87543a1a8fad51039d72f407011
 msgid "We can use machine translation to get many localizations "
 "done automatically and quickly."
-msgstr ""
-"WE CAN USE MACHINE TRANSLATION TO GET MANY LOCALIZATIONS DONE AUTOMATICALLY AND QUICKLY."
+msgstr "WE CAN USE MACHINE TRANSLATION TO GET MANY LOCALIZATIONS DONE AUTOMATICALLY AND QUICKLY."

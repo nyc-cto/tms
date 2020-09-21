@@ -50,11 +50,11 @@ class MsgElement:
         """
         # Add the translation to the msgstr with the surrounding "msgstr"
         # and quotes as required in a po file
-        if len(translation_list) == 1 and len('msgstr ""') + len(translation_list) < PO_LINE_LEN:
-            # Single translation string that is small enough to keep on a single line
+        if len(translation_list) == 1:
+            # Single translation string
             self.msgstr = ['msgstr "' + translation_list[0] + '"']
         else:
-            # Longer or multiple translation strings, put into multiple lines
+            # Multiple translation strings
             self.msgstr = ['msgstr ""']
             for translation in translation_list:
                 self.msgstr.append('"' + translation + '"')
@@ -194,12 +194,13 @@ class PoFile:
     def translate_po_file(self, target_lang_iso, translator):
         """For a PoFile object, adds translated msgstrs to any msg_element that is untranslated
             using the specified translator and target language.
+            NOTE: This translates one msgstr at a time. If better performance is needed in the future,
+                this could be changed to batch the translations (at the file level, or at a project level).
 
             Args:
                 target_lang_iso: The target language (ISO-639-1 identifier) for localization.
                 translator: The Translator object to use to translate texts.
         """
-
         for elem in self.msg_elements:
             if not elem.msgstr_translated:
                 # Only translate the untranslated msgstrs
