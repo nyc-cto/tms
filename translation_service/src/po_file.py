@@ -89,7 +89,7 @@ class PoFile:
         for detail on the structure of a .po file.
         Assumptions about the po file:
             - File starts with a header.
-            - A single blank line proceeds each message element.  # TODO: if a single elem, is there a line after header?
+            - A single blank line proceeds each message element.
             - Each message element has a message header, msgid, and msgstr.
         """
 
@@ -218,7 +218,7 @@ class PoFile:
 
             # Write the header first
             for line in self.header:
-                wf.write(line + "\n")  # TODO: Check if newline is needed for all of these
+                wf.write(line + "\n")
 
             # Write each element
             for elem in self.msg_elements:

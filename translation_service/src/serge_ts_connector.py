@@ -6,16 +6,21 @@ import sys
 sys.path.append('src')
 from project_localizer import localize_project
 
+# TODO: Get git commits working
+# from utils import git_push
+# def git_push(git_repo_path, commit_message="Update shared repository", enable_push=True, log=sys.stdout)
+# ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+# PROJECT_ROOT_GIT_PATH = f'{ROOT_PATH}/.git'
+# TODO: Decide where to put git checkouts & commits
+#   Likely at beginning and end of each step: copy_serge, localize, copy_outbox
+#   Should the inbox/outbox be committed to git repo, or just the serge_po dir?
+
 SERGE_TRANSLATION_DIR = '/var/serge/data/ts'
 TS_SERGE_PO_DIR = '/shared_directory/po_files/serge_po'
 TS_INBOX = '/shared_directory/po_files/inbox'
 TS_OUTBOX = '/shared_directory/po_files/outbox'
 
-# TODO: Decide where to put git checkouts & commits
-#   Likely at beginning and end of each step: copy_serge, localize, copy_outbox
 
-
-# TODO: get to work with google translate (perhaps have this as part of serge config?)
 def copy_serge_po_files(serge_translation_dir, ts_serge_po_dir, ts_inbox):
     """Copies files from serge_translation_dir that are new/updated (compares to those in the ts_serge_po_dir)
         to both ts_serge_po_dir (local copy) and ts_inbox (files to process).
@@ -36,6 +41,7 @@ def copy_serge_po_files(serge_translation_dir, ts_serge_po_dir, ts_inbox):
                if os.path.isdir(os.path.join(serge_translation_dir, subdir))]
 
     # TODO: See if there is a better way to handle this (git diff?)
+    #   https://stackoverflow.com/questions/33733453/get-changed-files-using-gitpython
     # TODO: Think about how to handle orphaned files (no longer exist on Serge side)
     # Create all subdirs (if they don't already exist) in both ts_serge_po_dir and ts_inbox
     # and copy any new/updated files as well
@@ -140,6 +146,7 @@ def localize(ts_inbox, ts_outbox, translation_api, google_key_path):
 
 def main():
     """Localizes all .po files from an input project directory into an output project directory."""
+    # TODO: Decide how to handle with projects (have the project name added? have it be part of each path?)
     # TODO: validate args
     parser = argparse.ArgumentParser(description='Handles push-ts and pull-ts for Serge.')
 

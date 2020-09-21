@@ -29,6 +29,7 @@ def localize_project(input_dir, output_dir, translation_api='caps', google_key_p
 
     # Get a list of all the target language subdir names for this project
     # NOTE: will skip any subdir that is not a supported target language ISO code
+    # TODO: Add in warning for any non-supported languages (print to stdout? Other?)
     target_lang_subdirs = [subdir for subdir in os.listdir(input_dir)
                            if os.path.isdir(os.path.join(input_dir, subdir)) and subdir in SUPPORTED_LANGUAGES]
 

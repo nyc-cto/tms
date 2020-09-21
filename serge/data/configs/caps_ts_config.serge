@@ -45,7 +45,7 @@ sync
 
             # (STRING) Path to a single remote repository
             # to sync with local `data_dir` folder
-            remote_path             https://github.com/as1729/random-json-content.git
+            remote_path             git@github.com:sladymon/test_tms.git
             # --- OR ---
             # (MAP) A key-value list of local subfolders to create and their
             # corresponding remote repositories (if the localizable data for the
@@ -127,7 +127,7 @@ jobs
         # (ARRAY) Destination (generated) languages.
         # This list should not include the source language.
         # There should be at least one destination language defined.
-        destination_languages       fr
+        destination_languages       es
 
         # (STRING) Path to source files relative to the config file
         # ('.' here is the current dir)
