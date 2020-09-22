@@ -133,8 +133,6 @@ def localize(ts_inbox, ts_outbox, translation_api, google_key_path):
                             "caps" for capitalization (default)).
             google_key_path: Path for the Google Service Account JSON keyfile (not required if not using this API).
     """
-    # Normalize paths  # TODO: See if needed
-    # args.input_dir, args.output_dir = os.path.normpath(args.input_dir), os.path.normpath(args.output_dir)
 
     # Localize the project and its po files
     localize_project(ts_inbox, ts_outbox, translation_api, google_key_path)
@@ -144,10 +142,37 @@ def localize(ts_inbox, ts_outbox, translation_api, google_key_path):
     shutil.rmtree(ts_inbox)
 
 
+def validate_args(input_dir, output_dir):
+    """Validates the arguments for this program. Exits with message if any invalid args.
+
+        Args:
+            input_dir: Filepath for the input file.
+            output_dir: Filepath for the output directory.
+    """
+
+    # Check input file directory
+    if not os.path.isdir(input_dir):
+        raise InvalidArgumentError("ERROR: Input directory does not exist.")
+
+    # Check output file directory
+    if not os.path.isdir(output_dir):
+        raise InvalidArgumentError("ERROR: Output directory does not exist.")
+
+
+class InvalidArgumentError(Exception):
+    """Error Handler for invalid arguments.
+
+        Attributes:
+            message: The error message to display
+    """
+
+    def __init__(self, message):
+        self.message = message
+
+
 def main():
-    """Localizes all .po files from an input project directory into an output project directory."""
+    """TODO: add description"""
     # TODO: Decide how to handle with projects (have the project name added? have it be part of each path?)
-    # TODO: validate args
     parser = argparse.ArgumentParser(description='Handles push-ts and pull-ts for Serge.')
 
     parser.add_argument("--mode", help="mode is either push_ts or pull_ts", required=True)
@@ -166,6 +191,16 @@ def main():
                         help='path for the Google Service Account JSON keyfile', required=False)
 
     args = parser.parse_args()
+
+    # Validate arguments for this program
+    # Note that arguments for the Translator (translation_api and google_key_path) will be validated separately
+    try:
+        validate_args(args.input_dir, args.output_dir)
+    except InvalidArgumentError as error:
+        sys.exit(error.message)
+
+    # Normalize paths
+    args.input_dir, args.output_dir = os.path.normpath(args.input_dir), os.path.normpath(args.output_dir)
 
     # Create ts_serge_dir, ts_inbox, ts_outbox if they don't already exist
     if not os.path.exists(args.ts_serge_dir):

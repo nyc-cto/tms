@@ -69,6 +69,27 @@ class TestPoLocalizer(unittest.TestCase):
             lang_subdir = os.path.join(self.temp_out_dir, lang)
             self.assertTrue(os.path.exists(lang_subdir))
 
+    # TODO: Add test
+    #     def test_localize_po_file(self):
+    #         """
+    #         localize_po_file
+    #             expected in: in_path, out_path, po_file (golden), target_lang_iso, translator
+    #             expected out: localized po_file written to out_path
+    #         """
+    #
+    #         # Create a translator object that does capitalization
+    #         translator = TranslatorFactory.get_translator(translation_api='caps')
+    #
+    #         # Call po_localizer
+    #         po_localizer.localize_po_file(self.temp_in_dir, self.temp_out_dir, EXAMPLE_FILE,
+    #                                       TARGET_LANGUAGE_ISO, translator)
+    #
+    #         # Get path for where the out file is expected to be written
+    #         out_example_filepath = os.path.join(self.temp_out_dir, EXAMPLE_FILE)
+    #
+    #         # TEST: Ensure the cycle is completed and a file is written in the correct location
+    #         self.assertTrue(os.path.exists(out_example_filepath))
+
     def test_create_output_localized_subdir(self):
         """
         create_output_localized_subdir
