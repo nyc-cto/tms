@@ -44,6 +44,34 @@ def do_work():
         write_post(post)
     utils.git_push(utils.PROJECT_ROOT_GIT_PATH, commit_message="Update shared repository: wordpress", enable_push=False)
 
+
+def do_export():
+    """
+    This sends the tranlated item
+    """
+
+    id="1"
+    lang="fr"
+    message = {
+        "content": "<p>Bonjour le monde! Je suis new Rapi Castillo</p>",
+        "title": "Bonjour le monde new!",
+        "excerpt": "Hello this is a new french translation",
+        "status": "publish"
+    }
+
+    print(id, lang, message)
+    # url = f"http://localhost:8888/wp-json/elsa/v1/translate/{id}/{lang}"
+    # user = "mocto"
+    # password = "mocto"
+    # credentials = user + ':' + password
+    # token = base64.b64encode(credentials.encode())
+    # header = {'Authorization': 'Basic ' + token.decode('utf-8')}
+
+    # response = requests.post(url, headers=header, data=message)
+
+    return response.json()
+
+
 app = Flask(__name__)
 api = Api(app)
 
@@ -56,7 +84,14 @@ class WordpressUpdateListener(Resource):
         do_work()
         return "Post"
 
+class WordpressExportListener(Resource):
+    def post(self):
+        do_export()
+        return "Post Export"
+
 api.add_resource(WordpressUpdateListener, "/wp-updates")
+api.add_resource(WordpressExportListener, "/wp-export")
+
 
 if __name__ == "__main__":
     # Warning: When debug mode is unsafe. Attackers can use it to run arbitrary python code.
