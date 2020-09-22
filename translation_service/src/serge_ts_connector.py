@@ -142,21 +142,22 @@ def localize(ts_inbox, ts_outbox, translation_api, google_key_path):
     shutil.rmtree(ts_inbox)
 
 
-def validate_args(input_dir, output_dir):
+def validate_args(mode, serge_dir):
     """Validates the arguments for this program. Exits with message if any invalid args.
 
         Args:
-            input_dir: Filepath for the input file.
-            output_dir: Filepath for the output directory.
+            mode: The mode to connect to Serge (push_ts or pull_ts)
+            serge_dir: Filepath for the serge/ts/ directory with the .po files.
     """
+    MODES = ["push_ts", "pull_ts"]
 
-    # Check input file directory
-    if not os.path.isdir(input_dir):
-        raise InvalidArgumentError("ERROR: Input directory does not exist.")
+    # Check that a valid mode is provided
+    if mode not in MODES:
+        raise InvalidArgumentError("ERROR: Invalid mode. (Modes = {})".format(MODES))
 
-    # Check output file directory
-    if not os.path.isdir(output_dir):
-        raise InvalidArgumentError("ERROR: Output directory does not exist.")
+    # Check that the serge directory exists
+    if not os.path.isdir(serge_dir):
+        raise InvalidArgumentError("ERROR: Serge directory does not exist.")
 
 
 class InvalidArgumentError(Exception):
@@ -192,15 +193,18 @@ def main():
 
     args = parser.parse_args()
 
+    # Normalize paths
+    args.serge_dir = os.path.normpath(args.serge_dir)
+    args.ts_serge_dir = os.path.normpath(args.ts_serge_dir)
+    args.ts_inbox = os.path.normpath(args.ts_inbox)
+    args.ts_outbox = os.path.normpath(args.ts_outbox)
+
     # Validate arguments for this program
     # Note that arguments for the Translator (translation_api and google_key_path) will be validated separately
     try:
-        validate_args(args.input_dir, args.output_dir)
+        validate_args(args.mode, args.serge_dir)
     except InvalidArgumentError as error:
         sys.exit(error.message)
-
-    # Normalize paths
-    args.input_dir, args.output_dir = os.path.normpath(args.input_dir), os.path.normpath(args.output_dir)
 
     # Create ts_serge_dir, ts_inbox, ts_outbox if they don't already exist
     if not os.path.exists(args.ts_serge_dir):
@@ -209,6 +213,7 @@ def main():
         os.makedirs(args.ts_inbox)
     if not os.path.exists(args.ts_outbox):
         os.makedirs(args.ts_outbox)
+
 
     # TODO: Figure out how to handle it if Serge is run more than once before localization completes
     #   Possibly have inbox named based on timestamp? Just append to the name?

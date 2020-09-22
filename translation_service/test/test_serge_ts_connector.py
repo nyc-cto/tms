@@ -54,6 +54,7 @@ class TestSergeTsConnector(unittest.TestCase):
         # Remove temporary root directory and its subdirectories & files
         shutil.rmtree(cls.temp_root_dir)
 
+    # TODO: Change validation tests to work with serge_ts_connector args
     def test_validate_args_invalid_in(self):
         """
         validate_args
