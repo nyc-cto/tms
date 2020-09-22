@@ -149,7 +149,7 @@ jobs
 
         # (STRING) Path to source files relative to the config file
         # ('.' here is the current dir)
-        source_dir                  ../serge/data/vcs/shared_directory/en
+        source_dir                  /var/serge/data/vcs/ 
 
         # (STRING) [OPTIONAL] Path prefix which will be prepended to the relative file path,
         # allowing gathering multiple files with the same name under the same db_namespace
@@ -475,7 +475,7 @@ jobs
         # Allowed macros: same as for the `ts_file_path` parameter (see above)
         # This value has effect only if `output_lang_files` or `output_default_lang_file`
         # parameters are set to YES
-        output_file_path            ../serge/data/vcs/shared_directory/%LANG%/%FILE%
+        output_file_path            /shared_directory/%LANG%/%FILE%
 
         # [OPTIONAL] A list of callback plugins that we should load,
         # with the parameters to pass

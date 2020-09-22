@@ -42,7 +42,7 @@ def get_posts():
 def do_work():
     for post in get_posts():
         write_post(post)
-    utils.git_push(utils.PROJECT_ROOT_GIT_PATH, commit_message="Update shared repository: wordpress", enable_push=False)
+    utils.git_push(utils.PROJECT_ROOT_GIT_PATH, commit_message="Update shared repository: wordpress", enable_push=True)
 
 app = Flask(__name__)
 api = Api(app)
