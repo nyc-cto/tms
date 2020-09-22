@@ -45,31 +45,25 @@ def do_work():
     utils.git_push(utils.PROJECT_ROOT_GIT_PATH, commit_message="Update shared repository: wordpress", enable_push=False)
 
 
-def do_export():
+def do_export(id, lang, message):
     """
     This sends the tranlated item
     """
 
-    id="1"
-    lang="fr"
-    message = {
-        "content": "<p>Bonjour le monde! Je suis new Rapi Castillo</p>",
-        "title": "Bonjour le monde new!",
-        "excerpt": "Hello this is a new french translation",
-        "status": "publish"
-    }
+    url = f"http://localhost:8080/wp-json/elsa/v1/translate/{id}/{lang}"
 
-    print(id, lang, message)
-    # url = f"http://localhost:8888/wp-json/elsa/v1/translate/{id}/{lang}"
-    # user = "mocto"
-    # password = "mocto"
-    # credentials = user + ':' + password
-    # token = base64.b64encode(credentials.encode())
-    # header = {'Authorization': 'Basic ' + token.decode('utf-8')}
+    user = ""
+    password = ""
+    credentials = user + ':' + password
+    token = base64.b64encode(credentials.encode())
+    header = {'Authorization': 'Basic ' + token.decode('utf-8')}
 
-    # response = requests.post(url, headers=header, data=message)
+    print("Header", token, header)
+    print("message", message)
 
-    return response.json()
+    response = requests.post(url, headers=header, json=message)
+    print(response)
+    return {"body": "Item"}
 
 
 app = Flask(__name__)
@@ -86,8 +80,17 @@ class WordpressUpdateListener(Resource):
 
 class WordpressExportListener(Resource):
     def post(self):
-        do_export()
-        return "Post Export"
+
+        id="1"
+        lang="fr"
+        message = {
+            "content": "<p>Bonjour le monde! Je suis new Rapi Castillo</p>",
+            "title": "Bonjour le monde new!",
+            "excerpt": "Hello this is a new french translation",
+            "status": "publish"
+        }
+        
+        return do_export(id, lang, message)
 
 api.add_resource(WordpressUpdateListener, "/wp-updates")
 api.add_resource(WordpressExportListener, "/wp-export")
