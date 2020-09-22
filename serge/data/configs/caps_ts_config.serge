@@ -13,8 +13,8 @@ sync
         data
         {
             executable                          python
-            pull_command                        python /translation_service/src/serge_ts_connector.py --mode pull_ts
-            push_command                        python /translation_service/src/serge_ts_connector.py --mode push_ts
+            pull_command                        python /var/tms/translation_service/src/serge_ts_connector.py --mode pull_ts
+            push_command                        python /var/tms/translation_service/src/serge_ts_connector.py --mode push_ts
 
         }
     }
@@ -31,7 +31,7 @@ sync
         data
         {
             # (STRING) Absolute path to local folder where local checkout will be stored.
-            local_path              /var/serge/data/vcs
+            local_path              /var/tms/serge/data/vcs
 
             /*
             As you can see from the line above, one can use `%ENV:SOMEVAR%` macro

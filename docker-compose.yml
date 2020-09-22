@@ -1,14 +1,9 @@
 version: "3"
-
 services:
   serge:
     image: serge
     stdin_open: true
     tty: true
     volumes:
-      - ./serge/data/:/var/serge/data
-      - ./translation_service/:/translation_service
-      - ./ingestion:/ingestion
-      - ./common:/common
-      - ./shared_directory:/shared_directory
-      - ./testing:/testing
+      - .:/var/tms
+    env_file: .env

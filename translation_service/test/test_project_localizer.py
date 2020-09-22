@@ -106,31 +106,6 @@ class TestPoLocalizer(unittest.TestCase):
         # TEST: Ensure that lang_subdir is created
         self.assertTrue(os.path.exists(lang_subdir))
 
-    def test_validate_args_invalid_in(self):
-        """
-        validate_args
-            expected_in: input_dir, output_dir
-            expected_out: Error for invalid input_dir
-        """
-
-        input_dir_invalid = ""
-
-        # TEST: Error is raised if the input_dir is invalid
-        with self.assertRaises(project_localizer.InvalidArgumentError):
-            project_localizer.validate_args(input_dir_invalid, self.temp_out_dir)
-
-    def test_validate_args_invalid_out(self):
-        """
-        validate_args
-            expected_in: input_dir, output_dir
-            expected_out: Error for invalid output_dir
-        """
-        output_dir_invalid = ""
-
-        # TEST: Error is raised if the output_dir is invalid
-        with self.assertRaises(project_localizer.InvalidArgumentError):
-            project_localizer.validate_args(self.temp_in_dir, output_dir_invalid)
-
 
 if __name__ == '__main__':
     unittest.main()

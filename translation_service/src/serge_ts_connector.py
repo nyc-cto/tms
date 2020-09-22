@@ -7,7 +7,11 @@ sys.path.append('src')
 from project_localizer import localize_project
 
 # TODO: Get git commits working
-# from utils import git_push
+# Path to root project git (if needed)
+root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+utils_path = f'{root_path}/common/src'
+sys.path.append(utils_path)
+from utils import git_push
 # def git_push(git_repo_path, commit_message="Update shared repository", enable_push=True, log=sys.stdout)
 # ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 # PROJECT_ROOT_GIT_PATH = f'{ROOT_PATH}/.git'
@@ -15,10 +19,10 @@ from project_localizer import localize_project
 #   Likely at beginning and end of each step: copy_serge, localize, copy_outbox
 #   Should the inbox/outbox be committed to git repo, or just the serge_po dir?
 
-SERGE_TRANSLATION_DIR = '/var/serge/data/ts'
-TS_SERGE_PO_DIR = '/shared_directory/po_files/serge_po'
-TS_INBOX = '/shared_directory/po_files/inbox'
-TS_OUTBOX = '/shared_directory/po_files/outbox'
+SERGE_TRANSLATION_DIR = '/var/tms/serge/data/ts'
+TS_SERGE_PO_DIR = '/var/tms/shared_directory/po_files/serge_po'
+TS_INBOX = '/var/tms/shared_directory/po_files/inbox'
+TS_OUTBOX = '/var/tms/shared_directory/po_files/outbox'
 
 
 def copy_serge_po_files(serge_translation_dir, ts_serge_po_dir, ts_inbox):
