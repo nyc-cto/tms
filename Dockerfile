@@ -30,15 +30,9 @@ ENV PATH="/serge-1.4/bin:${PATH}"
 ENV PERL5LIB="/serge-1.4/lib${PERL5LIB:+:}${PERL5LIB}"
 
 # We copy just the requirements.txt first to leverage Docker cache
-COPY ./translation_service/requirements.txt /translation_service/requirements.txt
-COPY ./ingestion/requirements.txt /ingestion/requirements.txt
+COPY ./translation_service/requirements.txt /var/tms/translation_service/requirements.txt
+COPY ./ingestion/requirements.txt /var/tms/ingestion/requirements.txt
 
 
-RUN pip install -r /translation_service/requirements.txt
-RUN pip install -r /ingestion/requirements.txt
-
-COPY ./translation_service /translation_service
-COPY ./ingestion /ingestion
-COPY ./common /common
-COPY ./shared_directory /shared_directory
-COPY ./testing /testing
+RUN pip install -r /var/tms/translation_service/requirements.txt
+RUN pip install -r /var/tms/ingestion/requirements.txt
