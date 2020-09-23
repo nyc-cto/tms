@@ -8,3 +8,4 @@ ingestion/secrets/
 /serge/data/ts
 /serge/data/db
 **/.DS_Store
+.env
