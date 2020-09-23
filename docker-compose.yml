@@ -4,6 +4,7 @@ services:
     image: serge
     stdin_open: true
     tty: true
+    ports: ["5000:5000"]
     volumes:
       - .:/var/tms
     env_file: .env

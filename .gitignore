@@ -2,7 +2,10 @@
 __pycache__
 *~
 .ts_env
-secrets/
+secrets/*
+!secrets/git_key.template
+!secrets/IngestionGoogleKey.json.template
+!secrets/TranslationGoogleKey.json.template
 ingestion/secrets/
 /serge/data/vcs
 /serge/data/ts
