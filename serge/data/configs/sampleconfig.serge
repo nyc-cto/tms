@@ -49,7 +49,7 @@ sync
         data
         {
             # (STRING) Absolute path to local folder where local checkout will be stored.
-            local_path              /var/serge/data/vcs
+            local_path              /var/tms-data/source_files
 
             /*
             As you can see from the line above, one can use `%ENV:SOMEVAR%` macro
@@ -63,7 +63,7 @@ sync
 
             # (STRING) Path to a single remote repository
             # to sync with local `data_dir` folder
-            remote_path             https://github.com/as1729/random-json-content.git
+            remote_path             ssh:git@github.com:nyc-cto/tms-data.git
             # --- OR ---
             # (MAP) A key-value list of local subfolders to create and their
             # corresponding remote repositories (if the localizable data for the
@@ -149,7 +149,7 @@ jobs
 
         # (STRING) Path to source files relative to the config file
         # ('.' here is the current dir)
-        source_dir                  ../vcs/
+        source_dir                  ../../../../tms-data/source_files
 
         # (STRING) [OPTIONAL] Path prefix which will be prepended to the relative file path,
         # allowing gathering multiple files with the same name under the same db_namespace
@@ -475,7 +475,7 @@ jobs
         # Allowed macros: same as for the `ts_file_path` parameter (see above)
         # This value has effect only if `output_lang_files` or `output_default_lang_file`
         # parameters are set to YES
-        output_file_path            ../vcs/%FILE%.%LANG%
+        output_file_path            ../../../../tms-data/source_files/%LANG%/%FILE%.%LANG%
 
         # [OPTIONAL] A list of callback plugins that we should load,
         # with the parameters to pass
