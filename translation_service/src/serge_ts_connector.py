@@ -6,23 +6,26 @@ import sys
 sys.path.append('src')
 from project_localizer import localize_project
 
-# TODO: Get git commits working
-# Path to root project git (if needed)
+# Append path to utils package before importing it
 root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 utils_path = f'{root_path}/common/src'
 sys.path.append(utils_path)
 from utils import git_push
-# def git_push(git_repo_path, commit_message="Update shared repository", enable_push=True, log=sys.stdout)
-# ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
-# PROJECT_ROOT_GIT_PATH = f'{ROOT_PATH}/.git'
-# TODO: Decide where to put git checkouts & commits
-#   Likely at beginning and end of each step: copy_serge, localize, copy_outbox
-#   Should the inbox/outbox be committed to git repo, or just the serge_po dir?
 
+# TODO: Change to use separate tms-data repo for data (& add to config.serge)
 SERGE_TRANSLATION_DIR = '/var/tms/serge/data/ts'
 TS_SERGE_PO_DIR = '/var/tms/shared_directory/po_files/serge_po'
 TS_INBOX = '/var/tms/shared_directory/po_files/inbox'
 TS_OUTBOX = '/var/tms/shared_directory/po_files/outbox'
+
+# TODO: For each step of the sync (copy_serge_po_files, localize, copy_outbox_to_serge),
+#   add git pull at the beginning of the step and git push at the end of the step
+# ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))  # TODO: Change to tms-data
+# PROJECT_ROOT_GIT_PATH = f'{ROOT_PATH}/.git'
+# # Pull any git repo changes
+# git_pull(PROJECT_ROOT_GIT_PATH)
+# # Push the git repo changes
+# git_push(PROJECT_ROOT_GIT_PATH, commit_message="Update .po files in shared repository")
 
 
 def copy_serge_po_files(serge_translation_dir, ts_serge_po_dir, ts_inbox):
@@ -39,14 +42,12 @@ def copy_serge_po_files(serge_translation_dir, ts_serge_po_dir, ts_inbox):
                 to add any new/updated files to.
             ts_inbox: The path to the translation service inbox (files to process) to copy the files to.
     """
-
     # Get a list of all the subdirs in serge_translation_dir
     subdirs = [subdir for subdir in os.listdir(serge_translation_dir)
                if os.path.isdir(os.path.join(serge_translation_dir, subdir))]
 
-    # TODO: See if there is a better way to handle this (git diff?)
-    #   https://stackoverflow.com/questions/33733453/get-changed-files-using-gitpython
-    # TODO: Think about how to handle orphaned files (no longer exist on Serge side)
+    # TODO: Future: See if there is a better way to handle this (git diff?)
+    # TODO: Future: Think about how to handle orphaned files (no longer exist on Serge side)
     # Create all subdirs (if they don't already exist) in both ts_serge_po_dir and ts_inbox
     # and copy any new/updated files as well
     for subdir in subdirs:
@@ -121,12 +122,11 @@ def copy_outbox_to_serge(serge_translation_dir, ts_outbox):
             # Copy/Overwrite
             shutil.copy2(ts_outbox_file_path, serge_file_path)
 
-    # TODO: Decide if this is how it should be handled
+    # TODO: Change this so that it is recognized by git (once git pull/push enabled)
     # Remove all contents from outbox once processed (copied to Serge)
     shutil.rmtree(ts_outbox)
 
 
-# TODO: Handle more complex subdir structure?
 def localize(ts_inbox, ts_outbox, translation_api, google_key_path):
     """Localizes all the language subdirs in the ts_inbox and writes to the ts_outbox.
 
@@ -141,7 +141,7 @@ def localize(ts_inbox, ts_outbox, translation_api, google_key_path):
     # Localize the project and its po files
     localize_project(ts_inbox, ts_outbox, translation_api, google_key_path)
 
-    # TODO: Decide if this is how it should be handled
+    # TODO: Change this so that it is recognized by git (once git pull/push enabled)
     # Remove all contents from inbox once processed (localized)
     shutil.rmtree(ts_inbox)
 
@@ -176,8 +176,8 @@ class InvalidArgumentError(Exception):
 
 
 def main():
-    """TODO: add description"""
-    # TODO: Decide how to handle with projects (have the project name added? have it be part of each path?)
+    """Program that connects Serge with a translation service, handling Serge push-ts and pull-ts."""
+    # TODO: Future: Add ability to have project subdirectory structure
     parser = argparse.ArgumentParser(description='Handles push-ts and pull-ts for Serge.')
 
     parser.add_argument("--mode", help="mode is either push_ts or pull_ts", required=True)
@@ -219,9 +219,8 @@ def main():
         os.makedirs(args.ts_outbox)
 
 
-    # TODO: Figure out how to handle it if Serge is run more than once before localization completes
-    #   Possibly have inbox named based on timestamp? Just append to the name?
-    #   Could have multiple inboxes, although they would overwite the outbox (maybe okay)?
+    # TODO: Future: Handle push_ts being before localization cycle is complete,
+    #   potentially via multiple time-stamped inboxes (or replace with queues)
 
     if args.mode == 'push_ts':
         copy_serge_po_files(serge_translation_dir=args.serge_dir, ts_serge_po_dir=args.ts_serge_dir,
