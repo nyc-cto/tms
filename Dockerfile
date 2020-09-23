@@ -30,5 +30,5 @@ RUN pip install -r /var/tms/ingestion/requirements.txt
 COPY . /var/tms
 
 RUN mkdir /var/.ssh_keys
-RUN ssh-keygen -t rsa -N "" -f /var/ssh_keys/github_deploy_key
+RUN ssh-keygen -t rsa -N "" -f /var/.ssh_keys/github_deploy_key
 RUN chmod 700 /var/.ssh_keys/github_deploy_key
