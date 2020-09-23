@@ -49,7 +49,7 @@ sync
         data
         {
             # (STRING) Absolute path to local folder where local checkout will be stored.
-            local_path              /var/tms-data/source_files
+            local_path              /var/tms-data
 
             /*
             As you can see from the line above, one can use `%ENV:SOMEVAR%` macro
@@ -63,7 +63,7 @@ sync
 
             # (STRING) Path to a single remote repository
             # to sync with local `data_dir` folder
-            remote_path             ssh:git@github.com:nyc-cto/tms-data.git
+            remote_path             git@github.com:nyc-cto/tms-data.git#%ENV:DEVELOPER_USERNAME%/%ENV:ENV%/local
             # --- OR ---
             # (MAP) A key-value list of local subfolders to create and their
             # corresponding remote repositories (if the localizable data for the
@@ -149,7 +149,7 @@ jobs
 
         # (STRING) Path to source files relative to the config file
         # ('.' here is the current dir)
-        source_dir                  ../../../../tms-data/source_files
+        source_dir                  ../../../../tms-data/source_files/en
 
         # (STRING) [OPTIONAL] Path prefix which will be prepended to the relative file path,
         # allowing gathering multiple files with the same name under the same db_namespace
