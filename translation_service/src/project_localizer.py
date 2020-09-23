@@ -1,6 +1,5 @@
 from po_file import PoFile
 from translators import TranslatorFactory
-import argparse
 import os
 import sys
 
@@ -28,10 +27,15 @@ def localize_project(input_dir, output_dir, translation_api='caps', google_key_p
     translator = TranslatorFactory.get_translator(translation_api, google_key_path)
 
     # Get a list of all the target language subdir names for this project
-    # NOTE: will skip any subdir that is not a supported target language ISO code
-    # TODO: Add in warning for any non-supported languages (print to stdout? Other?)
-    target_lang_subdirs = [subdir for subdir in os.listdir(input_dir)
-                           if os.path.isdir(os.path.join(input_dir, subdir)) and subdir in SUPPORTED_LANGUAGES]
+    # NOTE: will skip (and print a warning to stderr) any subdir that is not a supported target language ISO code
+    target_lang_subdirs = []
+    for subdir in os.listdir(input_dir):
+        if os.path.isdir(os.path.join(input_dir, subdir)):
+            if subdir in SUPPORTED_LANGUAGES:
+                target_lang_subdirs.append(subdir)
+            else:
+                sys.stderr.write("WARN {} is not a supported language and localizations "
+                                 "will not be processed for it.\n".format(subdir))
 
     # Create all localization subdirs in output_dir
     # and write a localized version of each file based on the subdir language
