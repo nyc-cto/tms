@@ -1,6 +1,5 @@
-from po_localizer import localize_po_file
+from po_file import PoFile
 from translators import TranslatorFactory
-import argparse
 import os
 import sys
 
@@ -28,9 +27,15 @@ def localize_project(input_dir, output_dir, translation_api='caps', google_key_p
     translator = TranslatorFactory.get_translator(translation_api, google_key_path)
 
     # Get a list of all the target language subdir names for this project
-    # NOTE: will skip any subdir that is not a supported target language ISO code
-    target_lang_subdirs = [subdir for subdir in os.listdir(input_dir)
-                           if os.path.isdir(os.path.join(input_dir, subdir)) and subdir in SUPPORTED_LANGUAGES]
+    # NOTE: will skip (and print a warning to stderr) any subdir that is not a supported target language ISO code
+    target_lang_subdirs = []
+    for subdir in os.listdir(input_dir):
+        if os.path.isdir(os.path.join(input_dir, subdir)):
+            if subdir in SUPPORTED_LANGUAGES:
+                target_lang_subdirs.append(subdir)
+            else:
+                sys.stderr.write("WARN {} is not a supported language and localizations "
+                                 "will not be processed for it.\n".format(subdir))
 
     # Create all localization subdirs in output_dir
     # and write a localized version of each file based on the subdir language
@@ -51,6 +56,33 @@ def localize_project(input_dir, output_dir, translation_api='caps', google_key_p
                                           po_file, target_lang_iso, translator)
 
 
+def localize_po_file(in_dir, out_dir, po_file, target_lang_iso, translator):
+    """Creates a localized version of hte po_file
+
+        Args:
+            in_dir: The filepath for the directory with the .po files.
+            out_dir: The filepath to write the localized .po files to.
+            po_file: The filename of the .po file to localize.
+            target_lang_iso: The target language (ISO-639-1 identifier) for localization.
+            translator: The Translator object to use to translate texts.
+    """
+    # Create output file name based on po_file and language code
+    po_filepath = os.path.join(in_dir, po_file)
+    localized_po_filepath = os.path.join(out_dir, po_file)
+
+    # Create a PoFile object
+    po = PoFile(po_filepath)
+
+    # Parse the po file
+    po.parse_po_file()
+
+    # Translate the po file
+    po.translate_po_file(target_lang_iso, translator)
+
+    # Write the localized/translated .po file
+    po.write_localized_po_file(localized_po_filepath)
+
+
 def create_output_localized_subdir(output_dir, target_lang_iso):
     """Creates a subdirectory in the output project for the target language.
 
@@ -68,62 +100,3 @@ def create_output_localized_subdir(output_dir, target_lang_iso):
         os.makedirs(output_target_lang_subdir)
 
     return output_target_lang_subdir
-
-
-def validate_args(input_dir, output_dir):
-    """Validates the arguments for this program. Exits with message if any invalid args.
-
-        Args:
-            input_dir: Filepath for the input file.
-            output_dir: Filepath for the output directory.
-    """
-
-    # Check input file directory
-    if not os.path.isdir(input_dir):
-        raise InvalidArgumentError("ERROR: Input directory does not exist.")
-
-    # Check output file directory
-    if not os.path.isdir(output_dir):
-        raise InvalidArgumentError("ERROR: Output directory does not exist.")
-
-
-class InvalidArgumentError(Exception):
-    """Error Handler for invalid arguments.
-
-        Attributes:
-            message: The error message to display
-    """
-
-    def __init__(self, message):
-        self.message = message
-
-
-def main():
-    """Localizes all .po files from an input project directory into an output project directory."""
-    parser = argparse.ArgumentParser(description='Localizes all .po files in a directory')
-    parser.add_argument("--input_dir", help="filepath for input project directory", required=True)
-    parser.add_argument("--output_dir", help="filepath for output project directory", required=True)
-    parser.add_argument('--translation_api', type=str,
-                        help='translation API to use ("google" for Google Translate,'
-                             ' "caps" for capitalization)', required=True)
-    parser.add_argument('--google_key_path', type=str,
-                        help='path for the Google Service Account JSON keyfile', required=False)
-
-    args = parser.parse_args()
-
-    # Validate arguments for this program
-    # Note that arguments for the Translator (translation_api and google_key_path) will be validated separately
-    try:
-        validate_args(args.input_dir, args.output_dir)
-    except InvalidArgumentError as error:
-        sys.exit(error.message)
-
-    # Normalize paths
-    args.input_dir, args.output_dir = os.path.normpath(args.input_dir), os.path.normpath(args.output_dir)
-
-    # Localize the project and its po files
-    localize_project(args.input_dir, args.output_dir, args.translation_api, args.google_key_path)
-
-
-if __name__ == "__main__":
-    main()
