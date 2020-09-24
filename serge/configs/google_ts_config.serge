@@ -13,9 +13,8 @@ sync
         data
         {
             executable                          python
-            pull_command                        python /var/tms/translation_service/src/serge_ts_connector.py --mode pull_ts
-            push_command                        python /var/tms/translation_service/src/serge_ts_connector.py --mode push_ts --translation_api google --google_key_path /var/tms/secrets/GoogleKey.json
-
+            pull_command                        python /var/tms/translation_service/src/serge_ts_connector.py --mode pull_ts --serge_dir /var/tms/serge/ts --ts_serge_dir /var/tms-data/po_files/serge_copy --ts_inbox /var/tms-data/po_files/inbox --ts_outbox /var/tms-data/po_files/outbox
+            push_command                        python /var/tms/translation_service/src/serge_ts_connector.py --mode push_ts --serge_dir /var/tms/serge/ts --ts_serge_dir /var/tms-data/po_files/serge_copy --ts_inbox /var/tms-data/po_files/inbox --ts_outbox /var/tms-data/po_files/outbox --translation_api google --google_key_path /var/tms/secrets/TranslationGoogleKey.json
         }
     }
 
@@ -31,7 +30,7 @@ sync
         data
         {
             # (STRING) Absolute path to local folder where local checkout will be stored.
-            local_path              /var/tms/serge/data/vcs
+            local_path              /var/tms-data
 
             /*
             As you can see from the line above, one can use `%ENV:SOMEVAR%` macro
@@ -45,7 +44,7 @@ sync
 
             # (STRING) Path to a single remote repository
             # to sync with local `data_dir` folder
-            remote_path             git@github.com:sladymon/test_tms.git
+            remote_path             git@github.com:nyc-cto/tms-data.git#%ENV:DEVELOPER_USERNAME%/%ENV:ENV%/local
             # --- OR ---
             # (MAP) A key-value list of local subfolders to create and their
             # corresponding remote repositories (if the localizable data for the
@@ -131,7 +130,7 @@ jobs
 
         # (STRING) Path to source files relative to the config file
         # ('.' here is the current dir)
-        source_dir                  ../vcs/
+        source_dir                  ../../../tms-data/source_files/en
 
         # (STRING) [OPTIONAL] Path prefix which will be prepended to the relative file path,
         # allowing gathering multiple files with the same name under the same db_namespace
@@ -240,7 +239,7 @@ jobs
         # (but you will likely need to implement your own fallback logic).
         # YES - leave the string blank
         # NO - fall back to source string (default)
-        leave_untranslated_blank    YES
+        leave_untranslated_blank    NO
 
         # (STRING) DBI-compatible connection string
         # Supported drivers: SQLite, MySQL and Postgres
@@ -457,7 +456,7 @@ jobs
         # Allowed macros: same as for the `ts_file_path` parameter (see above)
         # This value has effect only if `output_lang_files` or `output_default_lang_file`
         # parameters are set to YES
-        output_file_path            ../vcs/%FILE%.%LANG%
+        output_file_path            ../../../tms-data/source_files/%LANG%/%FILE%.%LANG%
 
         # [OPTIONAL] A list of callback plugins that we should load,
         # with the parameters to pass
