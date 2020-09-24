@@ -44,7 +44,7 @@ sync
 
             # (STRING) Path to a single remote repository
             # to sync with local `data_dir` folder
-            remote_path             http://github.com/nyc-cto/tms-data.git#%ENV:DEVELOPER_USERNAME%/%ENV:ENV%/local
+            remote_path             git@github.com:nyc-cto/tms-data.git#%ENV:DEVELOPER_USERNAME%/%ENV:ENV%/local
             # --- OR ---
             # (MAP) A key-value list of local subfolders to create and their
             # corresponding remote repositories (if the localizable data for the

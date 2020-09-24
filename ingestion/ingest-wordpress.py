@@ -18,8 +18,6 @@ ROOT_PATH = "/var/tms-data"
 def write_post(post):
     title = "wp" + str(post['id'])
     filename = f"{ROOT_PATH}/source_files/en/{title}.json"
-    print (11111)
-    print (filename)
     with open(filename, 'w') as outfile:
         d = {}
         d['id'] = post['id']
@@ -31,7 +29,7 @@ def write_post(post):
 
 def get_posts():
     # TODO: change this to point to prod website
-    url = "http://192.168.0.26:8888/wp-json/wp/v2/posts"
+    url = "http://localhost:8888/wp-json/wp/v2/posts"
     user = "admin"
     password = "vmaC YpeW CxyA DjNJ k0Rd TPpM"
     credentials = user + ':' + password
