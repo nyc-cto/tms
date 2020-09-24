@@ -189,7 +189,7 @@ jobs
             # plugin for more information.
             data
             {
-                path_matches \/(about|title|description)$
+                path_matches \/(content)$
         #param1             value1
                 #param2             value2
             }

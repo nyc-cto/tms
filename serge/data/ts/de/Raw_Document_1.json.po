@@ -1,0 +1,36 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
+"Generated-By: Serge 1.4\n"
+
+#. /content[1]/paragraph/elements[0]/textRun/content
+#: File: Raw_Document_1.json
+#: ID: 20b384412584d2d4994798b00f77f673
+msgid "We use technology to make New York ready for the future.\n"
+msgstr ""
+
+#. /content[3]/paragraph/elements[0]/textRun/content
+#: File: Raw_Document_1.json
+#: ID: f3c855425c11320f793fb57f6d0b37ea
+msgid "We can adapt to change and unexpected situations.\n"
+msgstr ""
+
+#. /content[5]/paragraph/elements[0]/textRun/content
+#: File: Raw_Document_1.json
+#: ID: 0243485be9dbea282112210606739735
+msgid "We are diverse and agile.\n"
+msgstr ""
+
+#. /content[7]/paragraph/elements[0]/textRun/content
+#: File: Raw_Document_1.json
+#: ID: 81a678f5b5588570c934a34e4fe81b72
+msgid "This is a new change.\n"
+msgstr ""
+
+#. /content[9]/paragraph/elements[0]/textRun/content
+#: File: Raw_Document_1.json
+#: ID: 8809cbbe564ac154089e8f390dd6a4ca
+msgid "This is another change.\n"
+msgstr ""
