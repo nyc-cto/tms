@@ -32,8 +32,6 @@ class TestUtils(unittest.TestCase):
         if not os.path.exists(test_dir):
             os.makedirs(test_dir)
 
-        # UPDATE THIS TEST!!
-
         # Create a shared_directory for files inside this test_dir
         shared_directory = os.path.join(test_dir, 'shared_directory')
         if not os.path.exists(shared_directory):

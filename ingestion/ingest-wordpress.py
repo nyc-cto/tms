@@ -18,6 +18,8 @@ ROOT_PATH = "/var/tms-data"
 def write_post(post):
     title = "wp" + str(post['id'])
     filename = f"{ROOT_PATH}/source_files/en/{title}.json"
+    print (11111)
+    print (filename)
     with open(filename, 'w') as outfile:
         d = {}
         d['id'] = post['id']
