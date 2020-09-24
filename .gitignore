@@ -13,3 +13,4 @@ ingestion/secrets/
 !/serge/db/README.md
 **/.DS_Store
 .env
+/tmp
