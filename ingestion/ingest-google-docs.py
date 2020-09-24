@@ -18,6 +18,7 @@ SCOPE_READ_DOCS = ['https://www.googleapis.com/auth/documents.readonly']
 
 ROOT_PATH = "/var/tms-data"
 GIT_REPO_PATH = f'{ROOT_PATH}/.git'
+SECRETS_PATH = '/var/tms/secrets/'
 COMMIT_MESSAGE = 'Update shared repository for google docs'
 
 def git_push():
@@ -71,21 +72,23 @@ def read_structural_elements(elements):
     return text
 
 def generate_secrets(token_pickle_path, raw_token_path, credentials_path, scope):
+    # XXX Doesn't work!
+
     # Generate secrets to access Google API, if not already generated, otherwise load in 
     creds = None
-    if os.path.exists(token_pickle_path):
-        with open(token_pickle_path, 'rb') as token:
+    if os.path.exists(SECRETS_PATH + token_pickle_path):
+        with open(SECRETS_PATH + token_pickle_path, 'rb') as token:
             creds = pickle.load(token)
     # If there are no credentials available, let the user log in.
     if not creds:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = client.flow_from_clientsecrets(credentials_path, scope)
-            store = file.Storage(raw_token_path)
+            flow = client.flow_from_clientsecrets(SECRETS_PATH + credentials_path, scope)
+            store = file.Storage(SECRETS_PATH + raw_token_path)
             creds = tools.run_flow(flow, store)
         # Save the credentials for the next run
-        with open(token_pickle_path, 'wb') as token:
+        with open(SECRETS_PATH + token_pickle_path, 'wb') as token:
             pickle.dump(creds, token)
     if scope == SCOPE_READ_DRIVE:
         service = build('drive', 'v3', credentials=creds)
@@ -99,15 +102,15 @@ def generate_secrets(token_pickle_path, raw_token_path, credentials_path, scope)
 def run():
     # Generate secrets, if not already generated
     service_drive = generate_secrets(
-        'secrets/token_read_drive.pickle',
-        'secrets/token_read_drive.json',
-        'secrets/credentials.json',
+        'token_read_drive.pickle',
+        'token_read_drive.json',
+        'IngestionGoogleKey.json',
         SCOPE_READ_DRIVE
         )
     service_docs = generate_secrets(
-        'secrets/token_read_docs.pickle',
-        'secrets/token_read_docs.json',
-        'secrets/credentials.json',
+        'token_read_docs.pickle',
+        'token_read_docs.json',
+        'IngestionGoogleKey.json',
         SCOPE_READ_DOCS
         )
 
@@ -135,7 +138,7 @@ def run():
         result = service_docs.documents().get(documentId=file_id).execute()
         content = read_structural_elements(result.get('body').get('content'))
         title = result.get('title')
-        filename = f"{ROOT_PATH}/shared_directory/en/{title}.json"
+        filename = f"{ROOT_PATH}/source_files/en/{title}.json"
         with open(filename, 'w') as outfile:
             d = {}
             d['title'] = title
