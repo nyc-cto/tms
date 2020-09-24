@@ -3,7 +3,7 @@ import sys
 from git import Repo
 
 # Path to root project git (if needed)
-ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+ROOT_PATH = "/var/tms-data"
 PROJECT_ROOT_GIT_PATH = f'{ROOT_PATH}/.git'
 
 # Log messages to be printed by git_push
@@ -14,8 +14,11 @@ PUSH_SUCCESSFUL_MESSAGE = "Push successful\n"
 
 
 # Push shared repository to Git if any files changed
+# TODO: This ignores new files that have not yet been added to git. We could simply grab them all, but
+# that would risk adding random junk files. Should there be a seperate method for callers to specify where
+# to look for newly created files?
 def git_push(git_repo_path, commit_message="Update shared repository", enable_push=True, log=sys.stdout):
-    """Utility method that pushes any updates to the shared_directory subdirectory of a git repo.
+    """Utility method that pushes any updates to a git repo.
 
         Args:
             git_repo_path: The git repo path where the push should happen.
@@ -26,7 +29,6 @@ def git_push(git_repo_path, commit_message="Update shared repository", enable_pu
     repo = Repo(git_repo_path)
 
     t = repo.head.commit.tree
-    repo.index.add(["shared_directory"])
     if repo.git.diff(t):
         repo.index.commit(commit_message)
         if enable_push:

@@ -16,6 +16,7 @@ from git import Repo
 SCOPE_READ_DRIVE = ['https://www.googleapis.com/auth/drive.metadata.readonly']
 SCOPE_READ_DOCS = ['https://www.googleapis.com/auth/documents.readonly']
 
+#XXX
 ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
 GIT_REPO_PATH = f'{ROOT_PATH}/.git'
 COMMIT_MESSAGE = 'Update shared repository'
@@ -27,7 +28,7 @@ def git_push():
     if repo.git.diff(t):
         repo.index.commit(COMMIT_MESSAGE)
         print("Pushing files to shared repository")
-        repo.git.push('origin', 'master')
+        #repo.git.push('origin', 'master')
         print("Push successful")
     else:
         print("No changes detected")
