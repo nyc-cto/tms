@@ -1,0 +1,38 @@
+sync
+{
+    # `ts` defines which translation service
+    # to synchronize translation files with
+    ts
+    {
+        @inherit                   base_config.serge#common-settings/ts
+
+        data
+        {
+            executable                          python
+            pull_command                        python /var/tms/translation_service/src/serge_ts_connector.py --mode pull_ts --serge_dir /var/tms/serge/ts --ts_serge_dir /var/tms-data/po_files/serge_copy --ts_inbox /var/tms-data/po_files/inbox --ts_outbox /var/tms-data/po_files/outbox
+            push_command                        python /var/tms/translation_service/src/serge_ts_connector.py --mode push_ts --serge_dir /var/tms/serge/ts --ts_serge_dir /var/tms-data/po_files/serge_copy --ts_inbox /var/tms-data/po_files/inbox --ts_outbox /var/tms-data/po_files/outbox --translation_api google --google_key_path /var/tms/secrets/TranslationGoogleKey.json
+        }
+    }
+
+    # connection parameters for a remote source control repository
+    vcs
+    {
+        @inherit                   base_config.serge#common-settings/vcs
+    }
+}
+jobs
+{
+
+    # First job definition
+    {
+        @inherit                   base_config.serge#common-settings/job
+
+        # Destination languages can be changed to a space separated list (ex. es fr ru)
+        # Supported languages include: es zh ru bn ht ko ar fr ur pl
+        destination_languages       es
+
+        # When set to YES, will put an empty string for any untranslated string in the localized file
+        # When set to NO, will put the original source language (English) string in the localized file instead
+        leave_untranslated_blank    YES
+    }
+} # end of jobs block

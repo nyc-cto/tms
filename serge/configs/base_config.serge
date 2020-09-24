@@ -1,39 +1,20 @@
-sync
+common-settings
 {
     # `ts` defines which translation service
     # to synchronize translation files with
     ts
     {
         # (STRING) TS plugin name
-        plugin                      smartcat_v2
+        plugin                      command
 
         # [OPTIONAL] Plugin data. Each plugin may have specific parameters
         # inside the `data` block. See the documentation for each specific
         # plugin for more information.
         data
         {
-            project_id                          sample-id-here
-            base_url                            https://smartcat.ai
-
-            /*
-            Provide your account ID as it is displayed on
-            your `Settings > API` page once you sign into
-            your Smartcat account.
-            */
-            account_id                          another-sample-id-here
-
-            /*
-            Go to `Settings > API` page in your account,
-            and generate an API key. Key name can be anything,
-            e.g. 'Serge', and the auto-generated secret part
-            of the key is what needs to be added here.
-            */
-            token                               2_sampletoken
-
-            /*
-            [OPTIONAL] Enable debug mode if requested by Smartcat support.
-            */
-            debug                               YES
+            executable                          python
+            pull_command                        python /var/tms/translation_service/src/serge_ts_connector.py --mode pull_ts --serge_dir /var/tms/serge/ts --ts_serge_dir /var/tms-data/po_files/serge_copy --ts_inbox /var/tms-data/po_files/inbox --ts_outbox /var/tms-data/po_files/outbox
+            push_command                        python /var/tms/translation_service/src/serge_ts_connector.py --mode push_ts --serge_dir /var/tms/serge/ts --ts_serge_dir /var/tms-data/po_files/serge_copy --ts_inbox /var/tms-data/po_files/inbox --ts_outbox /var/tms-data/po_files/outbox
         }
     }
 
@@ -94,10 +75,8 @@ sync
             email                   l10n-robot@example.com
         }
     }
-}
-jobs
-{
-    # First job definition
+
+    job
     {
         # (STRING) Unique job identifier string.
         # Format is arbitrary
@@ -498,5 +477,5 @@ jobs
         #         }
         #     }
         # }
-    } # end of first job definition
-} # end of jobs block
+    }
+}
