@@ -24,7 +24,11 @@ This command is responsible to "spin-up" the container that is defined in `docke
 
 ### Pre-requisites
 - Docker Desktop (https://www.docker.com/get-started)
-
+- Copy over `.env.template` into `.env` with any other environment variables the application needs access to.
+- Setup Secrets by looking at the following templates and re-creating them:
+	- `git_key.template` -> `git_key`
+	- `IngestionGoogleKey.json.template` -> `IngestionGoogleKey.json`
+	- `TranslationGoogleKey.json.template` -> `TranslationGoogleKey.json`
 
 ## Build Process
 1. Open/Run Docker Desktop

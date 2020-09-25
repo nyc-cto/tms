@@ -30,8 +30,19 @@ class CapsTranslator(Translator):
             Returns:
                 A list of the capitalized strings.
         """
+        cap_texts_list = []
+        for text in texts_list:
+            # Capitalize the text
+            text = text.upper()
 
-        return [text.upper() for text in texts_list]
+            # Fix any newline chars that have been capitalized
+            text = text.replace("\\R", "\\r")
+            text = text.replace("\\N", "\\n")
+
+            # Add the text to the list to be returned
+            cap_texts_list.append(text)
+
+        return cap_texts_list
 
 
 class GoogleTranslator(Translator):
@@ -113,3 +124,4 @@ def validate_translator_args(translation_api, google_key_path):
 
     if translation_api == "google" and google_key_path is None:
         sys.exit("ERROR: To use the Google Translate API, you must include the google_key_path.")
+
