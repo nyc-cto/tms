@@ -7,7 +7,7 @@ The Docker image is setup to run the Translation service Python application. The
 Follow the same steps as outlined below.
 
 # Running Ingestion Service w/ Docker
-The Docker image is setup to run the Ingestion service Python application. The current image is setup to use Python 3.8.5 and will install any dependencies specified in `/ingestion/requirements.txt` during the build process.
+The Docker image is setup to run the Ingestion service Python application. The current image is setup to use Python 3.8.5 and will install any dependencies specified in `/import_export/requirements.txt` during the build process.
 Follow the same steps as outlined below.
 
 
@@ -68,7 +68,7 @@ docker-compose exec serge bash
 ```
 4. Run the `ls` command and verify that you are seeing roughly the following directories. You want to make sure that the application directories defined in the top-level of the project exist. 
 ```
-bin   common  etc   ingestion  lib64  mnt  proc  run   serge-1.4	 srv  testing  translation_service  var
+bin   common  etc   import_export  lib64  mnt  proc  run   serge-1.4	 srv  testing  translation_service  var
 boot  dev     home  lib        media  opt  root  sbin  shared_directory  sys  tmp      usr
 ```
 
@@ -82,7 +82,7 @@ cd /var/serge/data/configs
 cd /translation_service
 
 # For ingestion service
-cd /ingestion
+cd /import_export
 ```
 2. (A) FOR SERGE ONLY: At this point you can change the `sampleconfigs.serge` file and run it as needed.
 All the commands below will work except for `push-ts` and `pull-ts` without any additional work.

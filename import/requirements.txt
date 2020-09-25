@@ -1,8 +1,0 @@
-flask==1.1.2
-flask-restful==0.3.8
-GitPython==3.1.8
-google-api-python-client==1.12.1
-google-auth-oauthlib==0.4.1
-google-auth==1.21.1
-httplib2==0.18.1
-oauth2client==4.1.3
