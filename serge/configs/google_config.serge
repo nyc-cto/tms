@@ -8,9 +8,8 @@ sync
 
         data
         {
-            executable                          python
-            pull_command                        python /var/tms/translation_service/src/serge_ts_connector.py --mode pull_ts --serge_dir /var/tms/serge/ts --ts_serge_dir /var/tms-data/po_files/serge_copy --ts_inbox /var/tms-data/po_files/inbox --ts_outbox /var/tms-data/po_files/outbox
-            push_command                        python /var/tms/translation_service/src/serge_ts_connector.py --mode push_ts --serge_dir /var/tms/serge/ts --ts_serge_dir /var/tms-data/po_files/serge_copy --ts_inbox /var/tms-data/po_files/inbox --ts_outbox /var/tms-data/po_files/outbox --translation_api google --google_key_path /var/tms/secrets/TranslationGoogleKey.json
+            @inherit                            base_config.serge#common-settings/ts/data
+            push_command                        python %ENV:TMS%/translation_service/src/serge_ts_connector.py --mode push_ts --serge_dir %ENV:SERGE_TS% --ts_serge_dir %ENV:TS_SERGE_COPY% --ts_inbox %ENV:TS_INBOX% --ts_outbox %ENV:TS_OUTBOX% --translation_api google --google_key_path %ENV:TRANSLATION_GOOGLE_KEY%
         }
     }
 
