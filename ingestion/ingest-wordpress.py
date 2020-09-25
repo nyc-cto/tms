@@ -1,6 +1,7 @@
 import base64
 import json
 import os.path
+import os
 import requests
 
 import sys
@@ -49,20 +50,17 @@ def do_export(id, lang, message):
     """
     This sends the tranlated item
     """
+    export_url = os.environ.get('EXPORT_URL')
 
-    url = f"http://localhost:8080/wp-json/elsa/v1/translate/{id}/{lang}"
+    url = f"{export_url}/wp-json/elsa/v1/translate/{id}/{lang}"
 
-    user = ""
-    password = ""
+    user = os.environ.get('EXPORT_USER')
+    password = os.environ.get('EXPORT_PASSWORD')
     credentials = user + ':' + password
     token = base64.b64encode(credentials.encode())
     header = {'Authorization': 'Basic ' + token.decode('utf-8')}
 
-    print("Header", token, header)
-    print("message", message)
-
     response = requests.post(url, headers=header, json=message)
-    print(response)
     return {"body": "Item"}
 
 
@@ -81,13 +79,14 @@ class WordpressUpdateListener(Resource):
 class WordpressExportListener(Resource):
     def post(self):
 
-        id="1"
-        lang="fr"
+        post_data = request.json
+        id=post_data.get("id")
+        lang=post_data.get("lang")
         message = {
-            "content": "<p>Bonjour le monde! Je suis new Rapi Castillo</p>",
-            "title": "Bonjour le monde new!",
-            "excerpt": "Hello this is a new french translation",
-            "status": "publish"
+            "content": post_data.get("content"),
+            "title": post_data.get("title"),
+            "excerpt": post_data.get("excerpt"),
+            "status": post_data.get("status")
         }
         
         return do_export(id, lang, message)
