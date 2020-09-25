@@ -77,6 +77,24 @@ class WordpressUpdateListener(Resource):
         return "Post"
 
 class WordpressExportListener(Resource):
+    """
+    `WordpressExportListener` will be the endpoint to be triggered when we want to return something back to a 
+    wordpress site. It requires the following body attributes:
+
+
+    JSON
+    {
+        "id": ID of the source content, 
+        "lang": target language code (ex. "fr"),
+        "content": HTML content (ex. "<p>Bonjour le monde! Je suis Rapi Castillo</p>"),
+        "title": Title of the translated content (ex. "Bonjour le monde!"),
+        "excerpt": Excerpt of the translated content (ex. "Hello this is a french translation xx"),
+        "status": "publish"
+    }
+
+    This will create/update the translated content.
+
+    """
     def post(self):
 
         post_data = request.json
