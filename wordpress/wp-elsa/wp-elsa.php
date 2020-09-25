@@ -25,6 +25,13 @@ function elsa_translation_endpoints() {
   );
 }
 
+
+/**
+ * create_translation
+ * 
+ * This processes the request from the /translate endpoint and creates
+ * a translated content.
+ */
 function create_translation(WP_REST_Request $request) {
   // Add a custom status code
   $language = $request['lang'];
@@ -50,8 +57,7 @@ function create_translation(WP_REST_Request $request) {
   pll_save_post_translations(array($current_language => $id, $language => $new_content));
 
   $content = new WP_Query(array('p' => $new_content, 'post_type' => 'any'));
-  /* TODO: Create translation here
-  */
+
   $response = new WP_REST_Response( 
     $content
   ); 
@@ -61,8 +67,13 @@ function create_translation(WP_REST_Request $request) {
 }
 
 
-/** End of Registration of Lanugae */
 
+
+/**
+ * elsa_requireents_activate
+ * 
+ * This function would require wordpress to have Polylang installed when acivating the plugin.
+ */
 function elsa_requirements_activate() {
 
   if ( current_user_can( 'activate_plugins' ) 
