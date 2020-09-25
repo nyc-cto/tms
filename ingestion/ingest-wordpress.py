@@ -61,7 +61,7 @@ def do_export(id, lang, message):
     header = {'Authorization': 'Basic ' + token.decode('utf-8')}
 
     response = requests.post(url, headers=header, json=message)
-    return {"body": "Item"}
+    return {"status": "success"}
 
 
 app = Flask(__name__)
