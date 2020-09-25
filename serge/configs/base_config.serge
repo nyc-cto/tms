@@ -187,7 +187,7 @@ common-settings
             # plugin for more information.
             data
             {
-                path_matches \/(about|title|description)$
+                path_matches \/(about|title|description|content|rendered)$
         #param1             value1
                 #param2             value2
             }
