@@ -33,37 +33,63 @@ function elsa_translation_endpoints() {
  * a translated content.
  */
 function create_translation(WP_REST_Request $request) {
-  // Add a custom status code
+  
   $language = $request['lang'];
   $id = $request['id'];
 
   $current_language = pll_get_post_language($id);
-
-  $json = json_decode($request->get_body());
-  $json->id = $id;
-  $json->lang = $language;
   
-  $new_content = wp_insert_post(
-    array(
+  $translated_post = pll_get_post($id, $language);
+  if ($translated_post == null) {
+    // Create Translation
+    $json = json_decode($request->get_body());
+    $json->id = $id;
+    $json->lang = $language;
+    
+    $new_content = wp_insert_post(
+      array(
+        'post_title' => $json->title,
+        'post_excerpt' => $json->excerpt,
+        'post_content' => $json->content
+      )
+    );
+
+
+    pll_set_post_language($new_content, $json->lang);
+
+    pll_save_post_translations(array($current_language => $id, $language => $new_content));
+
+    $content = new WP_Query(array('p' => $new_content, 'post_type' => 'any'));
+    $response = new WP_REST_Response( 
+      $content
+    ); 
+
+    $response->set_status(201);
+    return $response;
+  } else {
+    // Update the translation
+    $json = json_decode($request->get_body());
+    $json->id = $translated_post;
+    
+    $time = strtotime( 'now' );
+    $content = array(
+      'ID' => $json->id,
       'post_title' => $json->title,
       'post_excerpt' => $json->excerpt,
-      'post_content' => $json->content
-    )
-  );
+      'post_content' => $json->content,
+      'post_date'     => date( 'Y-m-d H:i:s', $time ),
+      'post_date_gmt' => gmdate( 'Y-m-d H:i:s', $time ),
+    );
 
+    $updated_post = wp_update_post($content);
 
-  pll_set_post_language($new_content, $json->lang);
+    $response = new WP_REST_Response( 
+      $content
+    ); 
 
-  pll_save_post_translations(array($current_language => $id, $language => $new_content));
-
-  $content = new WP_Query(array('p' => $new_content, 'post_type' => 'any'));
-
-  $response = new WP_REST_Response( 
-    $content
-  ); 
-
-  $response->set_status(201);
-  return $response;
+    $response->set_status(201);
+    return $response;
+  } 
 }
 
 
