@@ -9,7 +9,7 @@ sync
         data
         {
             @inherit                            base_config.serge#common-settings/ts/data
-            push_command                        python %ENV:TMS%/translation_service/src/serge_ts_connector.py --mode push_ts --serge_dir %ENV:SERGE_TS% --ts_serge_dir %ENV:TS_SERGE_COPY% --ts_inbox %ENV:TS_INBOX% --ts_outbox %ENV:TS_OUTBOX% --translation_api google --google_key_path %ENV:TRANSLATION_GOOGLE_KEY%
+            push_command                        python %ENV:TMS_PATH%/translation_service/src/serge_ts_connector.py --mode push_ts --serge_dir %ENV:SERGE_TS% --ts_serge_dir %ENV:TS_SERGE_COPY% --ts_inbox %ENV:TS_INBOX% --ts_outbox %ENV:TS_OUTBOX% --translation_api google --google_key_path %ENV:TRANSLATION_GOOGLE_KEY%
         }
     }
 

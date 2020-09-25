@@ -13,8 +13,8 @@ common-settings
         data
         {
             executable                          python
-            pull_command                        python %ENV:TMS%/translation_service/src/serge_ts_connector.py --mode pull_ts --serge_dir %ENV:SERGE_TS% --ts_serge_dir %ENV:TS_SERGE_COPY% --ts_inbox %ENV:TS_INBOX% --ts_outbox %ENV:TS_OUTBOX%
-            push_command                        python %ENV:TMS%/translation_service/src/serge_ts_connector.py --mode push_ts --serge_dir %ENV:SERGE_TS% --ts_serge_dir %ENV:TS_SERGE_COPY% --ts_inbox %ENV:TS_INBOX% --ts_outbox %ENV:TS_OUTBOX%
+            pull_command                        python %ENV:TMS_PATH%/translation_service/src/serge_ts_connector.py --mode pull_ts --serge_dir %ENV:SERGE_TS% --ts_serge_dir %ENV:TS_SERGE_COPY% --ts_inbox %ENV:TS_INBOX% --ts_outbox %ENV:TS_OUTBOX%
+            push_command                        python %ENV:TMS_PATH%/translation_service/src/serge_ts_connector.py --mode push_ts --serge_dir %ENV:SERGE_TS% --ts_serge_dir %ENV:TS_SERGE_COPY% --ts_inbox %ENV:TS_INBOX% --ts_outbox %ENV:TS_OUTBOX%
         }
     }
 
@@ -30,7 +30,7 @@ common-settings
         data
         {
             # (STRING) Absolute path to local folder where local checkout will be stored.
-            local_path              %ENV:TMS_DATA%
+            local_path              %ENV:TMS_DATA_PATH%
 
             /*
             As you can see from the line above, one can use `%ENV:SOMEVAR%` macro
@@ -128,7 +128,7 @@ common-settings
 
         # (STRING) Path to source files relative to the config file
         # ('.' here is the current dir)
-        source_dir                  %ENV:TMS_DATA%/source_files/en
+        source_dir                  %ENV:TMS_DATA_PATH%/source_files/en
 
         # (STRING) [OPTIONAL] Path prefix which will be prepended to the relative file path,
         # allowing gathering multiple files with the same name under the same db_namespace
@@ -454,7 +454,7 @@ common-settings
         # Allowed macros: same as for the `ts_file_path` parameter (see above)
         # This value has effect only if `output_lang_files` or `output_default_lang_file`
         # parameters are set to YES
-        output_file_path            %ENV:TMS_DATA%/source_files/%LANG%/%FILE%.%LANG%
+        output_file_path            %ENV:TMS_DATA_PATH%/source_files/%LANG%/%FILE%.%LANG%
 
         # [OPTIONAL] A list of callback plugins that we should load,
         # with the parameters to pass
