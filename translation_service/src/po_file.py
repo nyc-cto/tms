@@ -42,6 +42,23 @@ class MsgElement:
 
         return msgid_text
 
+    def get_msgstr_text(self):
+        """Returns a single concatenated string version of the text in the msgstr list."""
+
+        msgstr_text = ""
+
+        for line in self.msgstr:
+
+            # Remove "msgstr" from the line if present
+            if line.startswith("msgstr"):
+                line = line[len("msgstr "):].strip()
+
+            # Remove quotes at the beginning/ending of the line
+            # and add to the msgstr_text
+            msgstr_text += line.strip('"')
+
+        return msgstr_text
+
     def add_msgstr_translation(self, translation_list):
         """Adds a translated version of a msgstr, replacing the previous version.
 

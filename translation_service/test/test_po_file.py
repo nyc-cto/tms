@@ -12,6 +12,7 @@ from translators import TranslatorFactory
 GOLDEN_PO_MSGID = ['msgid "We can use machine translation to get many localizations "',
                    '"done automatically and quickly."']
 GOLDEN_PO_MSGID_TEXT = "We can use machine translation to get many localizations done automatically and quickly."
+GOLDEN_PO_MSGSTR_TEXT = "WE CAN USE MACHINE TRANSLATION TO GET MANY LOCALIZATIONS DONE AUTOMATICALLY AND QUICKLY."
 GOLDEN_PO_TRANSLATION = ["WE CAN USE MACHINE TRANSLATION TO GET MANY LOCALIZATIONS DONE AUTOMATICALLY AND QUICKLY."]
 GOLDEN_PO_MSGSTR = ['msgstr "WE CAN USE MACHINE TRANSLATION TO GET MANY LOCALIZATIONS DONE AUTOMATICALLY AND QUICKLY."']
 
@@ -89,6 +90,23 @@ class TestPoFile(unittest.TestCase):
 
         # TEST: Compare the returned string and the Golden version
         self.assertEqual(elem.get_msgid_text(), GOLDEN_PO_MSGID_TEXT)
+
+    def test_get_msgstr_text(self):
+        """
+        Test for MsgElement.get_msgstr_text()
+
+            setup: MsgElement must be initialized with msgstr
+            object modifications: (None)
+
+            expected args: (None)
+            expected returns: string with concatenated contents of the MsgElement's msgstr list
+
+        """
+        # Initialize test element with the Golden msgid and msgstr
+        elem = MsgElement(["#. /about"], GOLDEN_PO_MSGID, GOLDEN_PO_MSGSTR_TEXT, msgstr_translated=True)
+
+        # TEST: Compare the returned string and the Golden version
+        self.assertEqual(elem.get_msgstr_text(), GOLDEN_PO_MSGSTR_TEXT)
 
     def test_add_msgstr_translation(self):
         """
