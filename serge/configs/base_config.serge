@@ -13,8 +13,8 @@ common-settings
         data
         {
             executable                          python
-            pull_command                        python %ENV:TMS_PATH%/translation_service/src/serge_ts_connector.py --mode pull_ts --serge_dir %ENV:SERGE_TS% --ts_serge_dir %ENV:TS_SERGE_COPY% --ts_inbox %ENV:TS_INBOX% --ts_outbox %ENV:TS_OUTBOX%
-            push_command                        python %ENV:TMS_PATH%/translation_service/src/serge_ts_connector.py --mode push_ts --serge_dir %ENV:SERGE_TS% --ts_serge_dir %ENV:TS_SERGE_COPY% --ts_inbox %ENV:TS_INBOX% --ts_outbox %ENV:TS_OUTBOX%
+            pull_command                        python %ENV:TMS_PATH%/translation_service/src/serge_ts_connector.py --mode pull_ts
+            push_command                        python %ENV:TMS_PATH%/translation_service/src/serge_ts_connector.py --mode push_ts
         }
     }
 
