@@ -11,12 +11,6 @@ root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 utils_path = f'{root_path}/common/src'
 sys.path.append(utils_path)
 
-# Paths for each directory based on environment variables
-SERGE_TS = os.environ['SERGE_TS']
-TS_SERGE_COPY = os.environ['TS_SERGE_COPY']
-TS_INBOX = os.environ['TS_INBOX']
-TS_OUTBOX = os.environ['TS_OUTBOX']
-
 
 def serge_push_ts(serge_ts, ts_serge_copy, ts_inbox, ts_outbox, translation_api, google_key_path):
     """Handles the Serge push_ts command. Copies .po files from serge_ts that are new/updated
@@ -127,24 +121,6 @@ def serge_pull_ts(serge_ts, ts_outbox):
     shutil.rmtree(ts_outbox)
 
 
-# def localize(ts_inbox, ts_outbox, translation_api, google_key_path):
-#     """Localizes all the language subdirs in the ts_inbox and writes to the ts_outbox.
-#
-#         Args:
-#             ts_inbox: The path to the inbox dir with language subdirs and files that need to be localized.
-#             ts_outbox: The path to the outbox dir where to write localized language subdirs and files.
-#             translation_api: Translation API to use ("google" for Google Translate,
-#                             "caps" for capitalization (default)).
-#             google_key_path: Path for the Google Service Account JSON keyfile (not required if not using this API).
-#     """
-#
-#     # Localize the project and its po files
-#     localize_project(ts_inbox, ts_outbox, translation_api, google_key_path)
-#
-#     # Remove all contents from inbox once processed (localized)
-#     shutil.rmtree(ts_inbox)
-
-
 def validate_args(mode, serge_dir):
     """Validates the arguments for this program. Exits with message if any invalid args.
 
@@ -174,9 +150,16 @@ class InvalidArgumentError(Exception):
         self.message = message
 
 
+# TODO: Future: Add ability to have project subdirectory structure (possibly via Serge config, possibly this program)
 def main():
     """Program that connects Serge with a translation service, handling Serge push-ts and pull-ts."""
-    # TODO: Future: Add ability to have project subdirectory structure (possibly via Serge config, possibly here)
+
+    # Paths for each directory based on environment variables
+    SERGE_TS = os.environ['SERGE_TS']
+    TS_SERGE_COPY = os.environ['TS_SERGE_COPY']
+    TS_INBOX = os.environ['TS_INBOX']
+    TS_OUTBOX = os.environ['TS_OUTBOX']
+
     parser = argparse.ArgumentParser(description='Handles push-ts and pull-ts for Serge.')
 
     parser.add_argument("--mode", help="mode is either push_ts or pull_ts", required=True)
