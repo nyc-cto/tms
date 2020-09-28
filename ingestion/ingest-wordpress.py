@@ -11,14 +11,13 @@ from flask import Flask, has_request_context, request
 from flask_restful import Api, Resource, reqparse
 from git import Repo
 
-
-ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
+ROOT_PATH = "/var/tms-data"
 
 # TODO: Unit testing, end-to-end testing
 
 def write_post(post):
     title = "wp" + str(post['id'])
-    filename = f"{ROOT_PATH}/shared_directory/en/{title}.json"
+    filename = f"{ROOT_PATH}/source_files/en/{title}.json"
     with open(filename, 'w') as outfile:
         d = {}
         d['id'] = post['id']
