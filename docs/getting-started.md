@@ -29,6 +29,7 @@ This command is responsible to "spin-up" the container that is defined in `docke
 	- `git_key.template` -> `git_key`
 	- `IngestionGoogleKey.json.template` -> `IngestionGoogleKey.json`
 	- `TranslationGoogleKey.json.template` -> `TranslationGoogleKey.json`
+Your google keys may be the same as the existing ones, but your git_key will certainly need to be created.
 
 ## Build Process
 1. Open/Run Docker Desktop
@@ -76,20 +77,26 @@ boot  dev     home  lib        media  opt  root  sbin  shared_directory  sys  tm
 1. Navigate into the directory of the application you would like to develop.
 ```
 # For serge
-cd /var/serge/data/configs
+cd /var/tms/serge/configs
 
 # For translation servie
-cd /translation_service
+cd /var/tms/translation_service
 
 # For ingestion service
-cd /import_export
+cd /var/tms/import_export
 ```
 2. (A) FOR SERGE ONLY: At this point you can change the `sampleconfigs.serge` file and run it as needed.
 All the commands below will work except for `push-ts` and `pull-ts` without any additional work.
-Feel free to create new configuration files in the `/tms/serge/data/configs` directory and test them inside the container by running the commands below. You can change/edit these files in your local filesystem since the directory is mounted in the container.
+Feel free to create new configuration files in the `/var/tms/serge/configs` directory and test them inside the container by running the commands below. You can change/edit these files in your local filesystem since the directory is mounted in the container.
 ```
+
 # Command to initialize and setup the sqlite3 database and pull the repository for the first time.
 serge pull sampleconfigs.serge --initialize
+
+# Command that does everything for a Serge cycle. You need to run it at least twice to complete a full translation cycle.
+serge sync sampleconfig.serge
+
+Alternatively you can use the following commands for parts of the process:
 
 # Command to localize and generate the .po files.
 serge localize sampleconfigs.serge
