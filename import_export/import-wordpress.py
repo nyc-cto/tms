@@ -28,10 +28,10 @@ def write_post(post):
         json.dump(d, outfile)
 
 def get_posts():
-    import_url = os.environ.get('IMPORT_URL')
+    import_url = os.environ.get('WP_IMPORT_URL')
     url = f"{import_url}/wp-json/wp/v2/posts"
-    user = os.environ.get('IMPORT_USER')
-    password = os.environ.get('IMPORT_PASSWORD')
+    user = os.environ.get('WP_IMPORT_USER')
+    password = os.environ.get('WP_IMPORT_PASSWORD')
     credentials = user + ':' + password
     token = base64.b64encode(credentials.encode())
 
