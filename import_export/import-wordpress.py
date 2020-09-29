@@ -28,17 +28,15 @@ def write_post(post):
         json.dump(d, outfile)
 
 def get_posts():
-    # TODO: change this to point to prod website
     import_url = os.environ.get('IMPORT_URL')
     url = f"{import_url}/wp-json/wp/v2/posts"
     user = os.environ.get('IMPORT_USER')
     password = os.environ.get('IMPORT_PASSWORD')
     credentials = user + ':' + password
     token = base64.b64encode(credentials.encode())
-    useragent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36"
-    header = {'Authorization': 'Basic ' + token.decode('utf-8'), 'User-Agent': useragent, }
+
+    header = {'Authorization': 'Basic ' + token.decode('utf-8'), 'User-Agent': "", }
     response = requests.get(url, headers=header )
-    print (response.json())
     return response.json()
 
 def do_work():
