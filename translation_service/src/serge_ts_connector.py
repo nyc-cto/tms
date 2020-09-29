@@ -11,6 +11,12 @@ root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 utils_path = f'{root_path}/common/src'
 sys.path.append(utils_path)
 
+# Paths for each directory based on environment variables
+SERGE_TS = os.getenv('SERGE_TS')
+TS_SERGE_COPY = os.getenv('TS_SERGE_COPY')
+TS_INBOX = os.getenv('TS_INBOX')
+TS_OUTBOX = os.getenv('TS_OUTBOX')
+
 
 def serge_push_ts(serge_ts, ts_serge_copy, ts_inbox, ts_outbox, translation_api, google_key_path):
     """Handles the Serge push_ts command. Copies .po files from serge_ts that are new/updated
@@ -153,12 +159,6 @@ class InvalidArgumentError(Exception):
 # TODO: Future: Add ability to have project subdirectory structure (possibly via Serge config, possibly this program)
 def main():
     """Program that connects Serge with a translation service, handling Serge push-ts and pull-ts."""
-
-    # Paths for each directory based on environment variables
-    SERGE_TS = os.environ['SERGE_TS']
-    TS_SERGE_COPY = os.environ['TS_SERGE_COPY']
-    TS_INBOX = os.environ['TS_INBOX']
-    TS_OUTBOX = os.environ['TS_OUTBOX']
 
     parser = argparse.ArgumentParser(description='Handles push-ts and pull-ts for Serge.')
 
