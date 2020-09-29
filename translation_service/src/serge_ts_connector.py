@@ -84,7 +84,7 @@ def serge_push_ts(serge_ts, ts_serge_copy, ts_inbox, ts_outbox, translation_api,
 
 
 def serge_pull_ts(serge_ts, ts_outbox):
-    """Handles the Serge push_ts command. Copies the localized .po files from ts_outbox into serge_ts.
+    """Handles the Serge pull_ts command. Copies the localized .po files from ts_outbox into serge_ts.
 
         Args:
             serge_ts: The path to the directory where Serge has the .po files that need updating.
