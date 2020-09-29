@@ -33,7 +33,7 @@ class TestUtils(unittest.TestCase):
             os.makedirs(test_dir)
 
         # Create a shared_directory for files inside this test_dir
-        shared_directory = os.path.join(test_dir, 'shared_directory')
+        shared_directory = os.path.join(test_dir, 'source_files/en')
         if not os.path.exists(shared_directory):
             os.makedirs(shared_directory)
 
@@ -65,7 +65,7 @@ class TestUtils(unittest.TestCase):
             os.makedirs(test_dir)
 
         # Create a shared_directory for files inside this test_dir
-        shared_directory = os.path.join(test_dir, 'shared_directory')
+        shared_directory = os.path.join(test_dir, 'source_files/en')
         if not os.path.exists(shared_directory):
             os.makedirs(shared_directory)
 
