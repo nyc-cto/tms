@@ -169,6 +169,7 @@ class TestPoFile(unittest.TestCase):
             expected returns: (None)
 
         """
+        # ------------ Setup -------------
 
         # Create a translator object that does capitalization
         translator = TranslatorFactory.get_translator(translation_api='caps')
@@ -183,6 +184,8 @@ class TestPoFile(unittest.TestCase):
             elem = MsgElement(GOLDEN_PO_MSGHEADER_LISTS[i], GOLDEN_PO_MSGID_LISTS[i], GOLDEN_PO_MSGSTR_LISTS[i])
             msg_elements.append(elem)
         po.msg_elements = msg_elements
+
+        # ------------ Run translate_po_file -------------
 
         po.translate_po_file(TARGET_LANGUAGE_ISO, translator)
 
@@ -205,6 +208,7 @@ class TestPoFile(unittest.TestCase):
             expected returns: (None)
 
         """
+        # ------------ Setup -------------
 
         # Initialize PoFile object
         po = PoFile(self.in_example_filepath)
@@ -223,6 +227,8 @@ class TestPoFile(unittest.TestCase):
 
         # Get path for where to write out file
         out_example_filepath = os.path.join(self.temp_out_dir, EXAMPLE_FILE)
+
+        # ------------ Run write_localized_po_file -------------
 
         # Call write_localized_po_file to write to the out_example_filepath
         po.write_localized_po_file(out_example_filepath)
