@@ -16,6 +16,7 @@ SERGE_TS = os.getenv('SERGE_TS')
 TS_SERGE_COPY = os.getenv('TS_SERGE_COPY')
 TS_INBOX = os.getenv('TS_INBOX')
 TS_OUTBOX = os.getenv('TS_OUTBOX')
+TRANSLATION_GOOGLE_KEY = os.getenv('TRANSLATION_GOOGLE_KEY')
 
 
 def serge_push_ts(serge_ts, ts_serge_copy, ts_inbox, ts_outbox, translation_api, google_key_path):
@@ -163,9 +164,9 @@ def main():
     parser = argparse.ArgumentParser(description='Handles push-ts and pull-ts for Serge.')
 
     parser.add_argument("--mode", help="mode is either push_ts or pull_ts", required=True)
-    parser.add_argument("--serge_dir", help="filepath for serge/ts/ directory with .po files. Default={}".format(
+    parser.add_argument("--serge_ts", help="filepath for serge/ts/ directory with .po files. Default={}".format(
         SERGE_TS), default=SERGE_TS)
-    parser.add_argument("--ts_serge_dir", help="filepath for translation_service copy of serge/ts/. Default={}".format(
+    parser.add_argument("--ts_serge_copy", help="filepath for translation_service copy of serge/ts/. Default={}".format(
         TS_SERGE_COPY), default=TS_SERGE_COPY)
     parser.add_argument("--ts_inbox", help="filepath for translation_service inbox directory. Default={}".format(
         TS_INBOX), default=TS_INBOX)
@@ -175,26 +176,27 @@ def main():
                         help='translation API to use ("google" for Google Translate,'
                              ' "caps" for capitalization). Default=caps', default='caps')
     parser.add_argument('--google_key_path', type=str,
-                        help='path for the Google Service Account JSON keyfile', required=False)
+                        help='path for the Google Service Account JSON keyfile. Default={}',
+                        default=TRANSLATION_GOOGLE_KEY)
 
     args = parser.parse_args()
 
     # Normalize paths
-    args.serge_dir = os.path.normpath(args.serge_dir)
-    args.ts_serge_dir = os.path.normpath(args.ts_serge_dir)
+    args.serge_ts = os.path.normpath(args.serge_ts)
+    args.ts_serge_copy = os.path.normpath(args.ts_serge_copy)
     args.ts_inbox = os.path.normpath(args.ts_inbox)
     args.ts_outbox = os.path.normpath(args.ts_outbox)
 
     # Validate arguments for this program
     # Note that arguments for the Translator (translation_api and google_key_path) will be validated separately
     try:
-        validate_args(args.mode, args.serge_dir)
+        validate_args(args.mode, args.serge_ts)
     except InvalidArgumentError as error:
         sys.exit(error.message)
 
     # Create ts_serge_dir, ts_inbox, ts_outbox if they don't already exist
-    if not os.path.exists(args.ts_serge_dir):
-        os.makedirs(args.ts_serge_dir)
+    if not os.path.exists(args.ts_serge_copy):
+        os.makedirs(args.ts_serge_copy)
     if not os.path.exists(args.ts_inbox):
         os.makedirs(args.ts_inbox)
     if not os.path.exists(args.ts_outbox):
@@ -204,11 +206,11 @@ def main():
     #   potentially solve via multiple time-stamped inboxes (or replace with queues)
 
     if args.mode == 'push_ts':
-        serge_push_ts(serge_ts=args.serge_dir, ts_serge_copy=args.ts_serge_dir,
+        serge_push_ts(serge_ts=args.serge_ts, ts_serge_copy=args.ts_serge_copy,
                       ts_inbox=args.ts_inbox, ts_outbox=args.ts_outbox,
                       translation_api=args.translation_api, google_key_path=args.google_key_path)
     else:
-        serge_pull_ts(serge_ts=args.serge_dir, ts_outbox=args.ts_outbox)
+        serge_pull_ts(serge_ts=args.serge_ts, ts_outbox=args.ts_outbox)
 
 
 if __name__ == "__main__":
