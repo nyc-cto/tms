@@ -20,10 +20,13 @@ To set up this connection appropriately, Serge must be run with a
 
 This program can be called by specifying the mode, paths, and translator to be used.
 ```
-# For serge_pull_ts, only the mode and paths are needed
+# For serge_pull_ts, only the mode and paths are needed.
+# Replace the example paths below with correct paths for your project.
 python serge_ts_connector.py --mode pull_ts --serge_ts path/to/serge/ts --ts_serge_copy path/to/ts_serge_copy --ts_inbox path/to/ts_inbox --ts_outbox path/to/ts_outbox
 
-# For serge_push_ts, the translator should also be specified unless using the default (caps) translator
+# For serge_push_ts, in addition to the mode and paths, the translation_api (and google_key_path if using google) also need to be specified.
+# If the translation_api is not specified, a caps translator (used for testing) will be used, which simply capitalizes all text
+# Replace the example paths below with correct paths for your project.
 python serge_ts_connector.py --mode push_ts --serge_ts path/to/serge/ts --ts_serge_copy path/to/ts_serge_copy --ts_inbox path/to/ts_inbox --ts_outbox path/to/ts_outbox --translation_api google --google_key_path path/to/TranslationGoogleKey.json
 ```
 
@@ -41,14 +44,23 @@ TS_INBOX
 TS_OUTBOX
 TRANSLATION_GOOGLE_KEY
 
-# For serge_pull_ts, only the mode needs to be specified
+# For serge_pull_ts, only the mode is needed.
 python serge_ts_connector.py --mode pull_ts 
 
-# For serge_push_ts, the translator should also be specified unless using the default (caps) translator
+# For serge_push_ts, in addition to the mode, the translation_api also needs to be specified.
+# If the translation_api is not specified, a caps translator (used for testing) will be used, which simply capitalizes all text
 python serge_ts_connector.py --mode push_ts --translation_api google
 ```
 
-## project_localizer.py
+## Developer Notes
+
+### Requirements
+
+Please use [requirements.txt](https://github.com/nyc-cto/tms/blob/master/translation_service/requirements.txt) 
+to install appropriate packages in your env/venv, or use 
+the [Dockerfile](https://github.com/nyc-cto/tms/blob/master/Dockerfile), which will do so for you.
+
+## Supported Languages
 
 This program will localize (translate) all `.po` translation interchange files in a project 
 directory which has subdirectories that are named by their ISO-639-1 code (ex. 'es', 'fr'). 
@@ -57,40 +69,32 @@ required by NYC Local Law 30:
 ```
 SUPPORTED_LANGUAGES = {'es', 'zh', 'ru', 'bn', 'ht', 'ko', 'ar', 'fr', 'ur', 'pl'}
 ```
-However, this can be changed to whichever languages the program would like to support that the 
-translator API can also support.
+However, this can be changed in `project_localizer.py` to whichever languages the program would like to 
+support that the translator API can also support.
 
-If running the translation service module via the Serge configuration file, this program will not
-need to be called individually as `serge_ts_connector.py` will do so.
+## Po File Formatting
 
-## po_file.py
-
-This program includes a PoFile class and a MsgElement class, both of which are used to handle
-representing a `.po` translation interchange file (see 
+This program localizes (translates) `.po` translation interchange files. See 
 [gnu.org](https://www.gnu.org/software/gettext/manual/html_node/PO-Files.html) for details on the structure
-of a `.po` file), 
-including parsing, updating translations, 
-and writing to file. 
+of a `.po` file).
 
-Note the assumptions about the structure of any `.po` file used with these classes:
+Note the assumptions about the structure of any `.po` file used with this program:
 
 - File starts with a header.
 - A single blank line proceeds each message element.
 - Each message element has a message header, msgid, and msgstr.
 
-## translators.py
+If using the Serge continuous localization service, it should convert all documents to `.po` files 
+that satisfy these formatting restrictions.
 
-This program provides a Translator metaclass and TranslatorFactory. Currently there are two
-translators implemented: GoogleTranslator (for the Google Translation API) and 
-CapsTranslator (which simply capitalizes strings, mainly used for testing). 
+## Translation APIs
+
+Currently there are two Translators implemented (in `translators.py`): 
+- GoogleTranslator (for the Google Translation API) 
+- CapsTranslator (which simply capitalizes strings, mainly used for testing). 
 
 For the GoogleTranslator,
-a Google Service Account key must be provided as the `google_key_path`.
+a Google Service Account JSON keyfile must be provided as the `google_key_path`.
 
-Additional translators can easily be added.
-
-## Developer Notes
-
-Please use [requirements.txt](https://github.com/nyc-cto/tms/blob/master/translation_service/requirements.txt) 
-to install appropriate packages in your env/venv, or use 
-the [Dockerfile](https://github.com/nyc-cto/tms/blob/master/Dockerfile), which will do so for you.
+Additional translators can easily be added by inheriting from the `Translator` metaclass and adding to the list
+of `SUPPORTED_TRANSLATION_APIS`.
