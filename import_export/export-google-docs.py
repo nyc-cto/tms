@@ -12,14 +12,20 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from git import Repo
 
-SCOPE_READ_DRIVE = ['https://www.googleapis.com/auth/drive.metadata.readonly']
-SCOPE_READ_DOCS = ['https://www.googleapis.com/auth/documents.readonly']
+import sys
+sys.path.append('translation_service/src')
+from po_file import PoFile
+
+SCOPE_READ_DRIVE = ['https://www.googleapis.com/auth/drive']
+SCOPE_READ_DOCS = ['https://www.googleapis.com/auth/documents']
 
 SOURCE_PATH = 'source_files/en'
 GIT_BRANCH = f"{os.environ.get('DEVELOPER_USERNAME')}/{os.environ.get('ENV')}/local"
-ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '../../tms-data'))
+ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '../tms-data'))
 GIT_REPO_PATH = f'{ROOT_PATH}/.git'
 COMMIT_MESSAGE = 'Update shared repository'
+
+UPDATE_URL_ROOT = 'https://docs.googleapis.com/v1/documents'
 
 def git_push():
     repo = Repo(GIT_REPO_PATH)
@@ -45,32 +51,6 @@ def read_paragraph_element(element):
     return text_run.get('content')
 
 
-def read_structural_elements(elements):
-    """Recurses through a list of Structural Elements to read a document's text where text may be
-        in nested elements.
-
-        Args:
-            elements: a list of Structural Elements.
-    """
-    text = ''
-    for value in elements:
-        if 'paragraph' in value:
-            elements = value.get('paragraph').get('elements')
-            for elem in elements:
-                text += read_paragraph_element(elem)
-        elif 'table' in value:
-            # The text in table cells are in nested Structural Elements and tables may be
-            # nested.
-            table = value.get('table')
-            for row in table.get('tableRows'):
-                cells = row.get('tableCells')
-                for cell in cells:
-                    text += read_structural_elements(cell.get('content'))
-        elif 'tableOfContents' in value:
-            # The text in the TOC is also in a Structural Element.
-            toc = value.get('tableOfContents')
-            text += read_structural_elements(toc.get('content'))
-    return text
 
 def generate_secrets(token_pickle_path, raw_token_path, credentials_path, scope):
     # Generate secrets to access Google API, if not already generated, otherwise load in 
@@ -98,12 +78,32 @@ def generate_secrets(token_pickle_path, raw_token_path, credentials_path, scope)
     return service
 
 
+
 lang_folder_map = {
     "en": "1JTQuEBkzNbceyHUZYi5XeS0Qrf-8l9bh",
     "es": "1GAi6ZQkzsi9Mla4zsKAjYKsZ9AxeIfvu"
-}   
+}    
+
+def translate_doc(service_docs, doc_id, msgid_text, msgid_str):
+    payload = {
+      "requests": [
+        {
+          "replaceAllText": {
+            "containsText": {
+                "matchCase": False,
+                "text": msgid_text
+            },
+            "replaceText": msgid_str
+          }
+        }
+      ]
+    }
+    request = service_docs.documents().batchUpdate(documentId=doc_id, body=payload)
+    response = request.execute()
+    return response
 
 def main():
+    root_path = '/var/tms/serge/ts'
     # Generate secrets, if not already generated
     service_drive = generate_secrets(
         'secrets/token_read_drive.pickle',
@@ -118,9 +118,9 @@ def main():
         SCOPE_READ_DOCS
         )
 
-    # Find ids of all Google docs in the raw Serge folder
+    
     print("Finding documents")
-    file_ids = []
+    file_name_id_map = {}
     page_token = None
     while True:
         response = service_drive.files().list(spaces='drive',
@@ -128,25 +128,36 @@ def main():
                                               pageToken=page_token).execute()
         for file_content in response.get('files', []):
             # Process change
+            file_id = file_content.get('id')
+            file_name = file_content.get('name')
             file_parents = file_content.get('parents')
             if file_parents and lang_folder_map['en'] in file_parents:
-                file_id = file_content.get('id')
-                file_ids.append(file_id)
+                file_name_id_map[file_name] = file_id
         page_token = response.get('nextPageToken', None)
         if page_token is None:
             break 
 
-    print("Obtaining document contents")
-    # For each file, get contents
-    for file_id in file_ids:
-        result = service_docs.documents().get(documentId=file_id).execute()
-        filename = f"{ROOT_PATH}/{SOURCE_PATH}/{result.get('title')}.json"
-        with open(filename, 'w') as outfile:
-            json.dump(result, outfile)
+    for root, dirs, files in os.walk(f'{root_path}'):
+        for f in files:
+            if f.endswith('.po') and f != 'sample.json.po':
+                full_file_path = os.path.join(root,f)
+                path_parts = full_file_path.split('/')
+                folder_lang = path_parts[-2]
+                file_name = path_parts[-1].split('.json.po')[0]
 
-    # Push shared repository to Git if any files changed  
-    git_push()
-
+                # exclude wordpress files (for future developers, make this logic more abstracted)
+                if not file_name.startswith('wp'):
+                    po = PoFile(full_file_path)
+                    po.parse_po_file()
+                    translation_mapping = {el.get_msgid_text(): el.get_msgstr_text() for el in po.msg_elements}
+                    newfile = {'name': file_name, 'parents' : [lang_folder_map[folder_lang]]}
+                    print(f"Copying document {file_name} over to {folder_lang} folder")
+                    response_copy = service_drive.files().copy(fileId=file_name_id_map[file_name], body=newfile).execute()
+                    target_doc_id = response_copy["id"]
+                    for msgid_text in translation_mapping:
+                        msgid_str = translation_mapping[msgid_text]
+                        print(f"replacing in doc {target_doc_id} {msgid_text} with {msgid_str}")
+                        response_replace = translate_doc(service_docs, target_doc_id, msgid_text, msgid_str)
 
 if __name__ == "__main__":
     main()
