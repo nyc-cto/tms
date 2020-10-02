@@ -131,6 +131,10 @@ def main():
             file_id = file_content.get('id')
             file_name = file_content.get('name')
             file_parents = file_content.get('parents')
+            # Delete translated files in Google docs
+            if file_parents and lang_folder_map['es'] in file_parents:
+                print(f"deleting file {file_id}")
+                service_drive.files().delete(fileId=file_id).execute()
             if file_parents and lang_folder_map['en'] in file_parents:
                 file_name_id_map[file_name] = file_id
         page_token = response.get('nextPageToken', None)
