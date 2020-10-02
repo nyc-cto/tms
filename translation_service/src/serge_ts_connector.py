@@ -10,41 +10,37 @@ from project_localizer import localize_project
 root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 utils_path = f'{root_path}/common/src'
 sys.path.append(utils_path)
-from utils import git_push
 
-# TODO: Change to use separate tms-data repo for data (& add to config.serge)
-SERGE_TRANSLATION_DIR = '/var/tms/serge/data/ts'
-TS_SERGE_PO_DIR = '/var/tms/shared_directory/po_files/serge_po'
-TS_INBOX = '/var/tms/shared_directory/po_files/inbox'
-TS_OUTBOX = '/var/tms/shared_directory/po_files/outbox'
-
-# TODO: For each step of the sync (copy_serge_po_files, localize, copy_outbox_to_serge),
-#   add git pull at the beginning of the step and git push at the end of the step
-# ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))  # TODO: Change to tms-data
-# PROJECT_ROOT_GIT_PATH = f'{ROOT_PATH}/.git'
-# # Pull any git repo changes
-# git_pull(PROJECT_ROOT_GIT_PATH)
-# # Push the git repo changes
-# git_push(PROJECT_ROOT_GIT_PATH, commit_message="Update .po files in shared repository")
+# Paths for each directory based on environment variables
+SERGE_TS = os.getenv('SERGE_TS')
+TS_SERGE_COPY = os.getenv('TS_SERGE_COPY')
+TS_INBOX = os.getenv('TS_INBOX')
+TS_OUTBOX = os.getenv('TS_OUTBOX')
+TRANSLATION_GOOGLE_KEY = os.getenv('TRANSLATION_GOOGLE_KEY')
 
 
-def copy_serge_po_files(serge_translation_dir, ts_serge_po_dir, ts_inbox):
-    """Copies files from serge_translation_dir that are new/updated (compares to those in the ts_serge_po_dir)
-        to both ts_serge_po_dir (local copy) and ts_inbox (files to process).
+def serge_push_ts(serge_ts, ts_serge_copy, ts_inbox, ts_outbox, translation_api, google_key_path):
+    """Handles the Serge push_ts command. Copies .po files from serge_ts that are new/updated
+        (compares to those in the ts_serge_copy) to both ts_serge_copy (local copy) and ts_inbox (files to process).
+        Also localizes all the language subdirs in the ts_inbox and writes to the ts_outbox.
         NOTE: This will also copy over any files that have been previously localized and pushed to Serge since
-            Serge will change the line breaks in any localized msgstr, requiring update on the part of ts_serge_po_dir,
+            Serge will change the line breaks in any localized msgstr, requiring update on the part of ts_serge_copy,
             causing the files to go through the localization process once more, although none of the strings will be
             retranslated (simply parsed and then rewritten to the ts_outbox).
 
         Args:
-            serge_translation_dir: The path to the directory where Serge has the .po files that need translation.
-            ts_serge_po_dir: The path to the translation service's directory of local copies of serge .po files
+            serge_ts: The path to the directory where Serge has the .po files that need translation.
+            ts_serge_copy: The path to the translation service's directory of local copies of serge .po files
                 to add any new/updated files to.
             ts_inbox: The path to the translation service inbox (files to process) to copy the files to.
+            ts_outbox: The path to the outbox dir where to write localized language subdirs and files.
+            translation_api: Translation API to use ("google" for Google Translate,
+                            "caps" for capitalization (default)).
+            google_key_path: Path for the Google Service Account JSON keyfile (not required if not using this API).
     """
     # Get a list of all the subdirs in serge_translation_dir
-    subdirs = [subdir for subdir in os.listdir(serge_translation_dir)
-               if os.path.isdir(os.path.join(serge_translation_dir, subdir))]
+    subdirs = [subdir for subdir in os.listdir(serge_ts)
+               if os.path.isdir(os.path.join(serge_ts, subdir))]
 
     # TODO: Future: See if there is a better way to handle this (git diff?)
     # TODO: Future: Think about how to handle orphaned files (no longer exist on Serge side)
@@ -52,10 +48,10 @@ def copy_serge_po_files(serge_translation_dir, ts_serge_po_dir, ts_inbox):
     # and copy any new/updated files as well
     for subdir in subdirs:
 
-        subdir_path = os.path.join(serge_translation_dir, subdir)
+        subdir_path = os.path.join(serge_ts, subdir)
 
         # Create the subdir if it doesn't already exist in ts_serge_po_dir and ts_inbox
-        ts_serge_subdir_path = os.path.join(ts_serge_po_dir, subdir)
+        ts_serge_subdir_path = os.path.join(ts_serge_copy, subdir)
         ts_inbox_subdir_path = os.path.join(ts_inbox, subdir)
         if not os.path.exists(ts_serge_subdir_path):
             os.makedirs(ts_serge_subdir_path)
@@ -87,12 +83,18 @@ def copy_serge_po_files(serge_translation_dir, ts_serge_po_dir, ts_inbox):
                     shutil.copy2(serge_file_path, ts_serge_file_path)
                     shutil.copy2(serge_file_path, ts_inbox_file_path)
 
+    # Localize the project and its po files
+    localize_project(ts_inbox, ts_outbox, translation_api, google_key_path)
 
-def copy_outbox_to_serge(serge_translation_dir, ts_outbox):
-    """Copies the localized .po files from ts_outbox into the serge_translation_dir.
+    # Remove all contents from inbox once processed (localized)
+    shutil.rmtree(ts_inbox)
+
+
+def serge_pull_ts(serge_ts, ts_outbox):
+    """Handles the Serge pull_ts command. Copies the localized .po files from ts_outbox into serge_ts.
 
         Args:
-            serge_translation_dir: The path to the directory where Serge has the .po files that need updating.
+            serge_ts: The path to the directory where Serge has the .po files that need updating.
             ts_outbox: The path to the translation service outbox where the localized .po files are.
     """
 
@@ -106,7 +108,7 @@ def copy_outbox_to_serge(serge_translation_dir, ts_outbox):
         ts_outbox_subdir_path = os.path.join(ts_outbox, subdir)
 
         # Get the subdir paths for where to copy to in serge
-        serge_subdir_path = os.path.join(serge_translation_dir, subdir)
+        serge_subdir_path = os.path.join(serge_ts, subdir)
 
         # Get a list of all files in this subdir
         # Note: Assumes there are no further nested subdirectories
@@ -122,28 +124,8 @@ def copy_outbox_to_serge(serge_translation_dir, ts_outbox):
             # Copy/Overwrite
             shutil.copy2(ts_outbox_file_path, serge_file_path)
 
-    # TODO: Change this so that it is recognized by git (once git pull/push enabled)
     # Remove all contents from outbox once processed (copied to Serge)
     shutil.rmtree(ts_outbox)
-
-
-def localize(ts_inbox, ts_outbox, translation_api, google_key_path):
-    """Localizes all the language subdirs in the ts_inbox and writes to the ts_outbox.
-
-        Args:
-            ts_inbox: The path to the inbox dir with language subdirs and files that need to be localized.
-            ts_outbox: The path to the outbox dir where to write localized language subdirs and files.
-            translation_api: Translation API to use ("google" for Google Translate,
-                            "caps" for capitalization (default)).
-            google_key_path: Path for the Google Service Account JSON keyfile (not required if not using this API).
-    """
-
-    # Localize the project and its po files
-    localize_project(ts_inbox, ts_outbox, translation_api, google_key_path)
-
-    # TODO: Change this so that it is recognized by git (once git pull/push enabled)
-    # Remove all contents from inbox once processed (localized)
-    shutil.rmtree(ts_inbox)
 
 
 def validate_args(mode, serge_dir):
@@ -175,16 +157,17 @@ class InvalidArgumentError(Exception):
         self.message = message
 
 
+# TODO: Future: Add ability to have project subdirectory structure (possibly via Serge config, possibly this program)
 def main():
     """Program that connects Serge with a translation service, handling Serge push-ts and pull-ts."""
-    # TODO: Future: Add ability to have project subdirectory structure
+
     parser = argparse.ArgumentParser(description='Handles push-ts and pull-ts for Serge.')
 
     parser.add_argument("--mode", help="mode is either push_ts or pull_ts", required=True)
-    parser.add_argument("--serge_dir", help="filepath for serge/ts/ directory with .po files. Default={}".format(
-        SERGE_TRANSLATION_DIR), default=SERGE_TRANSLATION_DIR)
-    parser.add_argument("--ts_serge_dir", help="filepath for translation_service copy of serge/ts/. Default={}".format(
-        TS_SERGE_PO_DIR), default=TS_SERGE_PO_DIR)
+    parser.add_argument("--serge_ts", help="filepath for serge/ts/ directory with .po files. Default={}".format(
+        SERGE_TS), default=SERGE_TS)
+    parser.add_argument("--ts_serge_copy", help="filepath for translation_service copy of serge/ts/. Default={}".format(
+        TS_SERGE_COPY), default=TS_SERGE_COPY)
     parser.add_argument("--ts_inbox", help="filepath for translation_service inbox directory. Default={}".format(
         TS_INBOX), default=TS_INBOX)
     parser.add_argument("--ts_outbox", help="filepath for translation_service outbox directory. Default={}".format(
@@ -193,42 +176,41 @@ def main():
                         help='translation API to use ("google" for Google Translate,'
                              ' "caps" for capitalization). Default=caps', default='caps')
     parser.add_argument('--google_key_path', type=str,
-                        help='path for the Google Service Account JSON keyfile', required=False)
+                        help='path for the Google Service Account JSON keyfile. Default={}',
+                        default=TRANSLATION_GOOGLE_KEY)
 
     args = parser.parse_args()
 
     # Normalize paths
-    args.serge_dir = os.path.normpath(args.serge_dir)
-    args.ts_serge_dir = os.path.normpath(args.ts_serge_dir)
+    args.serge_ts = os.path.normpath(args.serge_ts)
+    args.ts_serge_copy = os.path.normpath(args.ts_serge_copy)
     args.ts_inbox = os.path.normpath(args.ts_inbox)
     args.ts_outbox = os.path.normpath(args.ts_outbox)
 
     # Validate arguments for this program
     # Note that arguments for the Translator (translation_api and google_key_path) will be validated separately
     try:
-        validate_args(args.mode, args.serge_dir)
+        validate_args(args.mode, args.serge_ts)
     except InvalidArgumentError as error:
         sys.exit(error.message)
 
     # Create ts_serge_dir, ts_inbox, ts_outbox if they don't already exist
-    if not os.path.exists(args.ts_serge_dir):
-        os.makedirs(args.ts_serge_dir)
+    if not os.path.exists(args.ts_serge_copy):
+        os.makedirs(args.ts_serge_copy)
     if not os.path.exists(args.ts_inbox):
         os.makedirs(args.ts_inbox)
     if not os.path.exists(args.ts_outbox):
         os.makedirs(args.ts_outbox)
 
-
-    # TODO: Future: Handle push_ts being before localization cycle is complete,
-    #   potentially via multiple time-stamped inboxes (or replace with queues)
+    # TODO: Future: Handle the case where push_ts is being called before the localization cycle is complete;
+    #   potentially solve via multiple time-stamped inboxes (or replace with queues)
 
     if args.mode == 'push_ts':
-        copy_serge_po_files(serge_translation_dir=args.serge_dir, ts_serge_po_dir=args.ts_serge_dir,
-                            ts_inbox=args.ts_inbox)
-        localize(ts_inbox=args.ts_inbox, ts_outbox=args.ts_outbox, translation_api=args.translation_api,
-                 google_key_path=args.google_key_path)
+        serge_push_ts(serge_ts=args.serge_ts, ts_serge_copy=args.ts_serge_copy,
+                      ts_inbox=args.ts_inbox, ts_outbox=args.ts_outbox,
+                      translation_api=args.translation_api, google_key_path=args.google_key_path)
     else:
-        copy_outbox_to_serge(serge_translation_dir=args.serge_dir, ts_outbox=args.ts_outbox)
+        serge_pull_ts(serge_ts=args.serge_ts, ts_outbox=args.ts_outbox)
 
 
 if __name__ == "__main__":

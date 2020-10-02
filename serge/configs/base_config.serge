@@ -13,8 +13,8 @@ common-settings
         data
         {
             executable                          python
-            pull_command                        python %ENV:TMS_PATH%/translation_service/src/serge_ts_connector.py --mode pull_ts --serge_dir %ENV:SERGE_TS% --ts_serge_dir %ENV:TS_SERGE_COPY% --ts_inbox %ENV:TS_INBOX% --ts_outbox %ENV:TS_OUTBOX%
-            push_command                        python %ENV:TMS_PATH%/translation_service/src/serge_ts_connector.py --mode push_ts --serge_dir %ENV:SERGE_TS% --ts_serge_dir %ENV:TS_SERGE_COPY% --ts_inbox %ENV:TS_INBOX% --ts_outbox %ENV:TS_OUTBOX%
+            pull_command                        python %ENV:TMS_PATH%/translation_service/src/serge_ts_connector.py --mode pull_ts
+            push_command                        python %ENV:TMS_PATH%/translation_service/src/serge_ts_connector.py --mode push_ts
         }
     }
 
@@ -181,15 +181,29 @@ common-settings
             # (STRING) Parser class name.
             # See Serge/Engine/Plugin/parse_*.pm files
             plugin                  parse_json
-
             # [OPTIONAL] Plugin data. Each plugin may have specific parameters
             # inside the `data` block. See the documentation for each specific
             # plugin for more information.
             data
             {
                 path_matches \/(about|title|description|content|rendered)$
-        #param1             value1
-                #param2             value2
+                path_html                        \/rendered$
+
+                html_parser
+                {
+                    plugin                      parse_php_xhtml
+
+                    data
+                    {
+                        expand_entities         YES
+
+                        # TODO: Once Serge 1.5 is released, add any additional
+                        # HTML tags that should be parsed to include_tags,
+                        # such as <a>  (below)
+                        
+                        # include_tags            a
+                    }
+                }
             }
         }
 
