@@ -147,17 +147,19 @@ def main():
 
                 # exclude wordpress files (for future developers, make this logic more abstracted)
                 if not file_name.startswith('wp'):
-                    po = PoFile(full_file_path)
-                    po.parse_po_file()
-                    translation_mapping = {el.get_msgid_text(): el.get_msgstr_text() for el in po.msg_elements}
-                    newfile = {'name': file_name, 'parents' : [lang_folder_map[folder_lang]]}
-                    print(f"Copying document {file_name} over to {folder_lang} folder")
-                    response_copy = service_drive.files().copy(fileId=file_name_id_map[file_name], body=newfile).execute()
-                    target_doc_id = response_copy["id"]
-                    for msgid_text in translation_mapping:
-                        msgid_str = translation_mapping[msgid_text]
-                        print(f"replacing in doc {target_doc_id} {msgid_text} with {msgid_str}")
-                        response_replace = translate_doc(service_docs, target_doc_id, msgid_text, msgid_str)
-
+                    try:
+                        po = PoFile(full_file_path)
+                        po.parse_po_file()
+                        translation_mapping = {el.get_msgid_text(): el.get_msgstr_text() for el in po.msg_elements}
+                        newfile = {'name': file_name, 'parents' : [lang_folder_map[folder_lang]]}
+                        print(f"Copying document {file_name} over to {folder_lang} folder")
+                        response_copy = service_drive.files().copy(fileId=file_name_id_map[file_name], body=newfile).execute()
+                        target_doc_id = response_copy["id"]
+                        for msgid_text in translation_mapping:
+                            msgid_str = translation_mapping[msgid_text]
+                            print(f"replacing in doc {target_doc_id} {msgid_text} with {msgid_str}")
+                            response_replace = translate_doc(service_docs, target_doc_id, msgid_text, msgid_str)
+                    except:
+                        pass
 if __name__ == "__main__":
     main()

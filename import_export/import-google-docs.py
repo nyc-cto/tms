@@ -16,7 +16,7 @@ SCOPE_READ_DRIVE = ['https://www.googleapis.com/auth/drive.metadata.readonly']
 SCOPE_READ_DOCS = ['https://www.googleapis.com/auth/documents.readonly']
 
 SOURCE_PATH = 'source_files/en'
-GIT_BRANCH = f"{os.environ.get('DEVELOPER_USERNAME')}/{os.environ.get('ENV')}/local"
+GIT_BRANCH = os.environ.get('TMS_DATA_BRANCH_NAME')
 ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '../../tms-data'))
 GIT_REPO_PATH = f'{ROOT_PATH}/.git'
 COMMIT_MESSAGE = 'Update shared repository'
@@ -130,6 +130,7 @@ def main():
             # Process change
             file_parents = file_content.get('parents')
             if file_parents and lang_folder_map['en'] in file_parents:
+                print(f"Found file {file_content.get('name')} with id {file_content.get('id')} and parents {file_content.get('parents')}")
                 file_id = file_content.get('id')
                 file_ids.append(file_id)
         page_token = response.get('nextPageToken', None)
@@ -140,6 +141,10 @@ def main():
     # For each file, get contents
     for file_id in file_ids:
         result = service_docs.documents().get(documentId=file_id).execute()
+        result = json.loads(json.dumps(result)
+            .replace('\\n', '')
+            .replace('\\u2019', "'")
+            )
         filename = f"{ROOT_PATH}/{SOURCE_PATH}/{result.get('title')}.json"
         with open(filename, 'w') as outfile:
             json.dump(result, outfile)
