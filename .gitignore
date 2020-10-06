@@ -14,3 +14,4 @@ ingestion/secrets/
 **/.DS_Store
 .env
 /tmp
+*.yaml
