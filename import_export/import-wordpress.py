@@ -12,14 +12,13 @@ from flask import Flask, has_request_context, request
 from flask_restful import Api, Resource, reqparse
 from git import Repo
 
-
-ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
+ROOT_PATH = "/var/tms-data"
 
 # TODO: Unit testing, end-to-end testing
 
 def write_post(post):
     title = "wp" + str(post['id'])
-    filename = f"{ROOT_PATH}/shared_directory/en/{title}.json"
+    filename = f"{ROOT_PATH}/source_files/en/{title}.json"
     with open(filename, 'w') as outfile:
         d = {}
         d['id'] = post['id']
@@ -30,13 +29,14 @@ def write_post(post):
         json.dump(d, outfile)
 
 def get_posts():
-    # TODO: change this to point to prod website
-    url = "http://localhost:8888/wp-json/wp/v2/posts"
-    user = "admin"
-    password = "vmaC YpeW CxyA DjNJ k0Rd TPpM"
+    import_url = os.environ.get('WP_IMPORT_URL')
+    url = f"{import_url}/wp-json/wp/v2/posts"
+    user = os.environ.get('WP_IMPORT_USER')
+    password = os.environ.get('WP_IMPORT_PASSWORD')
     credentials = user + ':' + password
     token = base64.b64encode(credentials.encode())
-    header = {'Authorization': 'Basic ' + token.decode('utf-8')}
+
+    header = {'Authorization': 'Basic ' + token.decode('utf-8'), 'User-Agent': "", }
     response = requests.get(url, headers=header )
     return response.json()
 
@@ -116,4 +116,3 @@ api.add_resource(WordpressExportListener, "/wp-export")
 if __name__ == "__main__":
     # Warning: When debug mode is unsafe. Attackers can use it to run arbitrary python code.
     app.run(debug=False, host='0.0.0.0')
-

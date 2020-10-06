@@ -1,39 +1,20 @@
-sync
+common-settings
 {
     # `ts` defines which translation service
     # to synchronize translation files with
     ts
     {
         # (STRING) TS plugin name
-        plugin                      smartcat_v2
+        plugin                      command
 
         # [OPTIONAL] Plugin data. Each plugin may have specific parameters
         # inside the `data` block. See the documentation for each specific
         # plugin for more information.
         data
         {
-            project_id                          sample-id-here
-            base_url                            https://smartcat.ai
-
-            /*
-            Provide your account ID as it is displayed on
-            your `Settings > API` page once you sign into
-            your Smartcat account.
-            */
-            account_id                          another-sample-id-here
-
-            /*
-            Go to `Settings > API` page in your account,
-            and generate an API key. Key name can be anything,
-            e.g. 'Serge', and the auto-generated secret part
-            of the key is what needs to be added here.
-            */
-            token                               2_sampletoken
-
-            /*
-            [OPTIONAL] Enable debug mode if requested by Smartcat support.
-            */
-            debug                               YES
+            executable                          python
+            pull_command                        python %ENV:TMS_PATH%/translation_service/src/serge_ts_connector.py --mode pull_ts
+            push_command                        python %ENV:TMS_PATH%/translation_service/src/serge_ts_connector.py --mode push_ts
         }
     }
 
@@ -49,7 +30,7 @@ sync
         data
         {
             # (STRING) Absolute path to local folder where local checkout will be stored.
-            local_path              /var/tms-data
+            local_path              %ENV:TMS_DATA_PATH%
 
             /*
             As you can see from the line above, one can use `%ENV:SOMEVAR%` macro
@@ -63,7 +44,7 @@ sync
 
             # (STRING) Path to a single remote repository
             # to sync with local `data_dir` folder
-            remote_path             git@github.com:nyc-cto/tms-data.git#%ENV:DEVELOPER_USERNAME%/%ENV:ENV%/local
+            remote_path             %ENV:TMS_DATA_GIT_REPOSITORY%#%ENV:TMS_DATA_BRANCH_NAME%
             # --- OR ---
             # (MAP) A key-value list of local subfolders to create and their
             # corresponding remote repositories (if the localizable data for the
@@ -94,10 +75,8 @@ sync
             email                   l10n-robot@example.com
         }
     }
-}
-jobs
-{
-    # First job definition
+
+    job
     {
         # (STRING) Unique job identifier string.
         # Format is arbitrary
@@ -149,7 +128,7 @@ jobs
 
         # (STRING) Path to source files relative to the config file
         # ('.' here is the current dir)
-        source_dir                  ../../../tms-data/source_files/en
+        source_dir                  %ENV:TMS_DATA_PATH%/source_files/en
 
         # (STRING) [OPTIONAL] Path prefix which will be prepended to the relative file path,
         # allowing gathering multiple files with the same name under the same db_namespace
@@ -202,15 +181,29 @@ jobs
             # (STRING) Parser class name.
             # See Serge/Engine/Plugin/parse_*.pm files
             plugin                  parse_json
-
             # [OPTIONAL] Plugin data. Each plugin may have specific parameters
             # inside the `data` block. See the documentation for each specific
             # plugin for more information.
             data
             {
-                path_matches \/(about|wptitle|content|description)$
-        #param1             value1
-                #param2             value2
+                path_matches \/(about|title|description|content|rendered)$
+                path_html                        \/rendered$
+
+                html_parser
+                {
+                    plugin                      parse_php_xhtml
+
+                    data
+                    {
+                        expand_entities         YES
+
+                        # TODO: Once Serge 1.5 is released, add any additional
+                        # HTML tags that should be parsed to include_tags,
+                        # such as <a>  (below)
+                        
+                        # include_tags            a
+                    }
+                }
             }
         }
 
@@ -475,7 +468,7 @@ jobs
         # Allowed macros: same as for the `ts_file_path` parameter (see above)
         # This value has effect only if `output_lang_files` or `output_default_lang_file`
         # parameters are set to YES
-        output_file_path            ../../../tms-data/source_files/%LANG%/%FILE%.%LANG%
+        output_file_path            %ENV:TMS_DATA_PATH%/source_files/%LANG%/%FILE%.%LANG%
 
         # [OPTIONAL] A list of callback plugins that we should load,
         # with the parameters to pass
@@ -498,5 +491,5 @@ jobs
         #         }
         #     }
         # }
-    } # end of first job definition
-} # end of jobs block
+    }
+}
