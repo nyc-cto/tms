@@ -34,7 +34,7 @@ class MsgElement:
 
             # Remove "msgid" from the line if present
             if line.startswith("msgid"):
-                line = line[len("msgid "):].strip().replace('\\n', '')
+                line = line[len("msgid "):].strip()
 
             # Remove quotes at the beginning/ending of the line
             # and add to the msgid_text
@@ -51,7 +51,7 @@ class MsgElement:
 
             # Remove "msgstr" from the line if present
             if line.startswith("msgstr"):
-                line = line[len("msgstr "):].strip().replace('\\n', '')
+                line = line[len("msgstr "):].strip()
 
             # Remove quotes at the beginning/ending of the line
             # and add to the msgstr_text
