@@ -103,6 +103,7 @@ def main():
     translation_mapping = None
     with open(os.environ.get('GOOGLE_DRIVE_CONFIG')) as f:
         translation_mapping = yaml.load(f)
+    non_en_folders = [translation_mapping['language_folders'][lang] for lang in translation_mapping['language_folders'] if lang != 'en']
     # Generate secrets, if not already generated
     service_drive = generate_secrets(
         'secrets/token_read_drive.pickle',
@@ -130,8 +131,9 @@ def main():
             file_id = file_content.get('id')
             file_name = file_content.get('name')
             file_parents = file_content.get('parents')
-            # Delete translated files in Google docs
-            if file_parents and translation_mapping['language_folders']['es'] in file_parents:
+            
+            # Delete translated files in Google docs to make space for new translations
+            if file_parents and any(folder in non_en_folders for folder in file_parents):
                 print(f"deleting file {file_id}")
                 service_drive.files().delete(fileId=file_id).execute()
             if file_parents and translation_mapping['language_folders']['en'] in file_parents:
