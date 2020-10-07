@@ -64,7 +64,8 @@ def main():
     service_drive = generate_secrets('drive')
     service_docs = generate_secrets('docs')
 
-    
+    # Obtain IDs of Google docs
+    # And delete stale translated content 
     print("Finding documents")
     file_name_id_map = {}
     page_token = None
@@ -82,14 +83,19 @@ def main():
             if file_parents and any(folder in non_en_folders for folder in file_parents):
                 print(f"deleting file {file_id}")
                 service_drive.files().delete(fileId=file_id).execute()
+            
+            # Map English files' names to Google doc ID
+            # So we know which document each .po file corresponds to
             if file_parents and translation_mapping['language_folders']['en'] in file_parents:
                 file_name_id_map[file_name] = file_id
+        
         page_token = response.get('nextPageToken', None)
         if page_token is None:
             break 
 
     for root, dirs, files in os.walk(f'{root_path}'):
         for f in files:
+            # Parse language and file name from .po file path
             if f.endswith('.po') and f != 'sample.json.po':
                 full_file_path = os.path.join(root,f)
                 path_parts = full_file_path.split('/')
@@ -101,12 +107,21 @@ def main():
                     try:
                         po = PoFile(full_file_path)
                         po.parse_po_file()
+                        # Map each original piece of text to its translated content
                         id_str_mapping = {el.get_msgid_text(): el.get_msgstr_text() for el in po.msg_elements}
+                        
+                        # Create a new file in the target language folder that's a copy of the English file to translate
+                        # And move it to the target language folder
                         newfile = {'name': file_name, 'parents' : [translation_mapping['language_folders'][folder_lang]]}
                         print(f"Copying document {file_name} over to {folder_lang} folder")
                         response_copy = service_drive.files().copy(fileId=file_name_id_map[file_name], body=newfile).execute()
                         target_doc_id = response_copy["id"]
-                        for msgid_text in id_str_mapping:
+                        
+                        # Replace the English content in the copied over file
+                        # With the translated content
+                        # Iterate through msgid_text values in descending length order
+                        # So that individual word translations don't interfere with longer phrases containing the word
+                        for msgid_text in sorted(id_str_mapping, key=len, reverse=True):
                             msgid_str = id_str_mapping[msgid_text]
                             print(f"replacing in doc {target_doc_id} {msgid_text} with {msgid_str}")
                             response_replace = translate_doc(service_docs, target_doc_id, msgid_text, msgid_str)
