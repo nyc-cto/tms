@@ -14,3 +14,5 @@ ingestion/secrets/
 **/.DS_Store
 .env
 /tmp
+**/Pipfile
+**/Pipfile.lock

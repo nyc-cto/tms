@@ -68,7 +68,7 @@ def export_wordpress():
             id = data["id"]
             title = data["wptitle"]["rendered"]
             content = data["content"]["rendered"]
-            lang =  "fr"#file_extension[1:]
+            lang =  file_extension[1:]
             
             update_wordpress(id, lang, title, content)
 
