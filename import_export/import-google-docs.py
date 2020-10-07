@@ -14,6 +14,9 @@ from git import Repo
 import yaml
 from google_doc_utils import generate_secrets
 
+import sys
+sys.path.append('common/src')
+import utils
 
 SOURCE_PATH = 'source_files/en'
 GIT_BRANCH = os.environ.get('TMS_DATA_BRANCH_NAME')
@@ -21,17 +24,6 @@ ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '../../tms
 GIT_REPO_PATH = f'{ROOT_PATH}/.git'
 COMMIT_MESSAGE = 'Update shared repository'
 
-def git_push():
-    repo = Repo(GIT_REPO_PATH)
-    t = repo.head.commit.tree
-    repo.index.add([SOURCE_PATH])
-    if repo.git.diff(t):
-        repo.index.commit(COMMIT_MESSAGE)
-        print(f"Pushing files to branch {GIT_BRANCH}")
-        repo.git.push('origin', GIT_BRANCH)
-        print("Push successful")
-    else:
-        print("No changes detected")
 
 def read_paragraph_element(element):
     """Returns the text in the given ParagraphElement.
@@ -114,7 +106,7 @@ def main():
             json.dump(result, outfile)
 
     # Push shared repository to Git if any files changed  
-    git_push()
+    utils.git_push(utils.PROJECT_ROOT_GIT_PATH, commit_message="Update shared repository: Google docs", enable_push=True)
 
 
 if __name__ == "__main__":

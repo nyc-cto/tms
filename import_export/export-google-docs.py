@@ -7,7 +7,9 @@ from google_doc_utils import generate_secrets
 
 import sys
 sys.path.append('translation_service/src')
+sys.path.append('common/src')
 from po_file import PoFile
+import utils
 
 SCOPE_READ_DRIVE = ['https://www.googleapis.com/auth/drive']
 SCOPE_READ_DOCS = ['https://www.googleapis.com/auth/documents']
@@ -20,17 +22,6 @@ COMMIT_MESSAGE = 'Update shared repository'
 
 UPDATE_URL_ROOT = 'https://docs.googleapis.com/v1/documents'
 
-def git_push():
-    repo = Repo(GIT_REPO_PATH)
-    t = repo.head.commit.tree
-    repo.index.add([SOURCE_PATH])
-    if repo.git.diff(t):
-        repo.index.commit(COMMIT_MESSAGE)
-        print(f"Pushing files to branch {GIT_BRANCH}")
-        repo.git.push('origin', GIT_BRANCH)
-        print("Push successful")
-    else:
-        print("No changes detected")
 
 def read_paragraph_element(element):
     """Returns the text in the given ParagraphElement.
