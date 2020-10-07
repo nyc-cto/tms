@@ -59,7 +59,7 @@ def export_wordpress():
         basename = os.path.basename(target)
         if basename.startswith("wp"):
           # print(target)
-          with open(target, "r") as json_file:
+          with open(target, "rb") as json_file:
             filename, file_extension = os.path.splitext(basename)
 
             data = json.load(json_file)
