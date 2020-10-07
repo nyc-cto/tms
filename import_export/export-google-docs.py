@@ -11,6 +11,7 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from git import Repo
+import yaml
 
 import sys
 sys.path.append('translation_service/src')
@@ -79,11 +80,6 @@ def generate_secrets(token_pickle_path, raw_token_path, credentials_path, scope)
 
 
 
-lang_folder_map = {
-    "en": "1JTQuEBkzNbceyHUZYi5XeS0Qrf-8l9bh",
-    "es": "1GAi6ZQkzsi9Mla4zsKAjYKsZ9AxeIfvu"
-}    
-
 def translate_doc(service_docs, doc_id, msgid_text, msgid_str):
     payload = {
       "requests": [
@@ -104,6 +100,9 @@ def translate_doc(service_docs, doc_id, msgid_text, msgid_str):
 
 def main():
     root_path = '/var/tms/serge/ts'
+    translation_mapping = None
+    with open(os.environ.get('GOOGLE_DRIVE_CONFIG')) as f:
+        translation_mapping = yaml.load(f)
     # Generate secrets, if not already generated
     service_drive = generate_secrets(
         'secrets/token_read_drive.pickle',
@@ -132,10 +131,10 @@ def main():
             file_name = file_content.get('name')
             file_parents = file_content.get('parents')
             # Delete translated files in Google docs
-            if file_parents and lang_folder_map['es'] in file_parents:
+            if file_parents and translation_mapping['language_folders']['es'] in file_parents:
                 print(f"deleting file {file_id}")
                 service_drive.files().delete(fileId=file_id).execute()
-            if file_parents and lang_folder_map['en'] in file_parents:
+            if file_parents and translation_mapping['language_folders']['en'] in file_parents:
                 file_name_id_map[file_name] = file_id
         page_token = response.get('nextPageToken', None)
         if page_token is None:
@@ -154,13 +153,13 @@ def main():
                     try:
                         po = PoFile(full_file_path)
                         po.parse_po_file()
-                        translation_mapping = {el.get_msgid_text(): el.get_msgstr_text() for el in po.msg_elements}
-                        newfile = {'name': file_name, 'parents' : [lang_folder_map[folder_lang]]}
+                        id_str_mapping = {el.get_msgid_text(): el.get_msgstr_text() for el in po.msg_elements}
+                        newfile = {'name': file_name, 'parents' : [translation_mapping['language_folders'][folder_lang]]}
                         print(f"Copying document {file_name} over to {folder_lang} folder")
                         response_copy = service_drive.files().copy(fileId=file_name_id_map[file_name], body=newfile).execute()
                         target_doc_id = response_copy["id"]
-                        for msgid_text in translation_mapping:
-                            msgid_str = translation_mapping[msgid_text]
+                        for msgid_text in id_str_mapping:
+                            msgid_str = id_str_mapping[msgid_text]
                             print(f"replacing in doc {target_doc_id} {msgid_text} with {msgid_str}")
                             response_replace = translate_doc(service_docs, target_doc_id, msgid_text, msgid_str)
                     except:

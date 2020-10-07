@@ -14,4 +14,4 @@ ingestion/secrets/
 **/.DS_Store
 .env
 /tmp
-*.yaml
+drive_config.yaml

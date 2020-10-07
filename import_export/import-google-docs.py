@@ -11,6 +11,7 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from git import Repo
+import yaml
 
 SCOPE_READ_DRIVE = ['https://www.googleapis.com/auth/drive.metadata.readonly']
 SCOPE_READ_DOCS = ['https://www.googleapis.com/auth/documents.readonly']
@@ -96,14 +97,13 @@ def generate_secrets(token_pickle_path, raw_token_path, credentials_path, scope)
     else:
         service = None
     return service
-
-
-lang_folder_map = {
-    "en": "1JTQuEBkzNbceyHUZYi5XeS0Qrf-8l9bh",
-    "es": "1GAi6ZQkzsi9Mla4zsKAjYKsZ9AxeIfvu"
-}   
+ 
 
 def main():
+    translation_mapping = None
+    with open(os.environ.get('GOOGLE_DRIVE_CONFIG')) as f:
+        translation_mapping = yaml.load(f)
+
     # Generate secrets, if not already generated
     service_drive = generate_secrets(
         'secrets/token_read_drive.pickle',
@@ -129,7 +129,7 @@ def main():
         for file_content in response.get('files', []):
             # Process change
             file_parents = file_content.get('parents')
-            if file_parents and lang_folder_map['en'] in file_parents:
+            if file_parents and translation_mapping['language_folders']['en'] in file_parents:
                 print(f"Found file {file_content.get('name')} with id {file_content.get('id')} and parents {file_content.get('parents')}")
                 file_id = file_content.get('id')
                 file_ids.append(file_id)
