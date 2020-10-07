@@ -3,13 +3,7 @@ import json
 import os.path
 import os
 import requests
-
-import sys
-sys.path.append('../common/src')
-import utils
-
-from flask import Flask, has_request_context, request
-from flask_restful import Api, Resource, reqparse
+from requests.auth import HTTPBasicAuth
 from git import Repo
 
 import json
@@ -83,12 +77,9 @@ def update_wordpress(id, language, title, content, excerpt=""):
   url = f"{export_url}/wp-json/elsa/v1/translate/{id}/{language}"
   user = os.environ.get('WP_EXPORT_USER')
   password = os.environ.get('WP_EXPORT_PASSWORD')
-  credentials = user + ':' + password
-  token = base64.b64encode(credentials.encode())
-  header = {'Authorization': 'Basic ' + token.decode('utf-8')}
-
-  response = requests.post(url, headers=header, json=message)
+  response = requests.post(url, headers={'User-Agent': ""}, auth=HTTPBasicAuth(user, password), json=message)
   return {"status": "success"}
+
 
 if __name__ == "__main__":
   # Warning: When debug mode is unsafe. Attackers can use it to run arbitrary python code.
