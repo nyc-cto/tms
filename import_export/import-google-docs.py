@@ -12,9 +12,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from git import Repo
 import yaml
+from google_doc_utils import generate_secrets
 
-SCOPE_READ_DRIVE = ['https://www.googleapis.com/auth/drive.metadata.readonly']
-SCOPE_READ_DOCS = ['https://www.googleapis.com/auth/documents.readonly']
 
 SOURCE_PATH = 'source_files/en'
 GIT_BRANCH = os.environ.get('TMS_DATA_BRANCH_NAME')
@@ -72,31 +71,6 @@ def read_structural_elements(elements):
             toc = value.get('tableOfContents')
             text += read_structural_elements(toc.get('content'))
     return text
-
-def generate_secrets(token_pickle_path, raw_token_path, credentials_path, scope):
-    # Generate secrets to access Google API, if not already generated, otherwise load in 
-    creds = None
-    if os.path.exists(token_pickle_path):
-        with open(token_pickle_path, 'rb') as token:
-            creds = pickle.load(token)
-    # If there are no credentials available, let the user log in.
-    if not creds:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = client.flow_from_clientsecrets(credentials_path, scope)
-            store = file.Storage(raw_token_path)
-            creds = tools.run_flow(flow, store)
-        # Save the credentials for the next run
-        with open(token_pickle_path, 'wb') as token:
-            pickle.dump(creds, token)
-    if scope == SCOPE_READ_DRIVE:
-        service = build('drive', 'v3', credentials=creds)
-    elif scope == SCOPE_READ_DOCS:
-        service = build('docs', 'v1', credentials=creds)
-    else:
-        service = None
-    return service
  
 
 def main():
@@ -105,18 +79,8 @@ def main():
         translation_mapping = yaml.load(f)
 
     # Generate secrets, if not already generated
-    service_drive = generate_secrets(
-        'secrets/token_read_drive.pickle',
-        'secrets/token_read_drive.json',
-        'secrets/credentials_drive.json',
-        SCOPE_READ_DRIVE
-        )
-    service_docs = generate_secrets(
-        'secrets/token_read_docs.pickle',
-        'secrets/token_read_docs.json',
-        'secrets/credentials_docs.json',
-        SCOPE_READ_DOCS
-        )
+    service_drive = generate_secrets('drive')
+    service_docs = generate_secrets('docs')
 
     # Find ids of all Google docs in the raw Serge folder
     print("Finding documents")

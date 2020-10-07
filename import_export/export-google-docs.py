@@ -1,17 +1,9 @@
-from __future__ import print_function
 import json
 import pickle
 import os.path
-from time import sleep
-from httplib2 import Http
-from oauth2client import client
-from oauth2client import file
-from oauth2client import tools
-from googleapiclient.discovery import build
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
 from git import Repo
 import yaml
+from google_doc_utils import generate_secrets
 
 import sys
 sys.path.append('translation_service/src')
@@ -52,34 +44,6 @@ def read_paragraph_element(element):
     return text_run.get('content')
 
 
-
-def generate_secrets(token_pickle_path, raw_token_path, credentials_path, scope):
-    # Generate secrets to access Google API, if not already generated, otherwise load in 
-    creds = None
-    if os.path.exists(token_pickle_path):
-        with open(token_pickle_path, 'rb') as token:
-            creds = pickle.load(token)
-    # If there are no credentials available, let the user log in.
-    if not creds:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = client.flow_from_clientsecrets(credentials_path, scope)
-            store = file.Storage(raw_token_path)
-            creds = tools.run_flow(flow, store)
-        # Save the credentials for the next run
-        with open(token_pickle_path, 'wb') as token:
-            pickle.dump(creds, token)
-    if scope == SCOPE_READ_DRIVE:
-        service = build('drive', 'v3', credentials=creds)
-    elif scope == SCOPE_READ_DOCS:
-        service = build('docs', 'v1', credentials=creds)
-    else:
-        service = None
-    return service
-
-
-
 def translate_doc(service_docs, doc_id, msgid_text, msgid_str):
     payload = {
       "requests": [
@@ -104,19 +68,10 @@ def main():
     with open(os.environ.get('GOOGLE_DRIVE_CONFIG')) as f:
         translation_mapping = yaml.load(f)
     non_en_folders = [translation_mapping['language_folders'][lang] for lang in translation_mapping['language_folders'] if lang != 'en']
+    
     # Generate secrets, if not already generated
-    service_drive = generate_secrets(
-        'secrets/token_read_drive.pickle',
-        'secrets/token_read_drive.json',
-        'secrets/credentials_drive.json',
-        SCOPE_READ_DRIVE
-        )
-    service_docs = generate_secrets(
-        'secrets/token_read_docs.pickle',
-        'secrets/token_read_docs.json',
-        'secrets/credentials_docs.json',
-        SCOPE_READ_DOCS
-        )
+    service_drive = generate_secrets('drive')
+    service_docs = generate_secrets('docs')
 
     
     print("Finding documents")
