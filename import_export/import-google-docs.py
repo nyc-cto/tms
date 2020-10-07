@@ -97,6 +97,8 @@ def main():
     # For each file, get contents
     for file_id in file_ids:
         result = service_docs.documents().get(documentId=file_id).execute()
+        # Remove newline and non-ASCII apostrophe characters
+        # For Google doc transcribing to look correct
         result = json.loads(json.dumps(result)
             .replace('\\n', '')
             .replace('\\u2019', "'")
