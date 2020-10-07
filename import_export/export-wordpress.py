@@ -73,7 +73,7 @@ def export_wordpress():
             update_wordpress(id, lang, title, content)
 
 def update_wordpress(id, language, title, content, excerpt=""):
-  export_url = os.environ.get('EXPORT_URL')
+  export_url = os.environ.get('WP_EXPORT_URL')
   message = {
       "content": content,
       "title": title,
@@ -81,8 +81,8 @@ def update_wordpress(id, language, title, content, excerpt=""):
       "status": "published"
   }
   url = f"{export_url}/wp-json/elsa/v1/translate/{id}/{language}"
-  user = os.environ.get('EXPORT_USER')
-  password = os.environ.get('EXPORT_PASSWORD')
+  user = os.environ.get('WP_EXPORT_USER')
+  password = os.environ.get('WP_EXPORT_PASSWORD')
   credentials = user + ':' + password
   token = base64.b64encode(credentials.encode())
   header = {'Authorization': 'Basic ' + token.decode('utf-8')}
