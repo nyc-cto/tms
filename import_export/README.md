@@ -30,10 +30,12 @@ The original documents would placed in the `en` folder under the `Translations` 
 
 Since Google's API refers to folders and files by their ID, we need to map the names of the language folders to their respective folder IDs. The folder ID can be found by going to the folder, where the URL will look like https://drive.google.com/drive/u/1/folders/<folder ID>. The folder ID can be copied from that part of the URL and will be around 25 characters. The mapping should be put in a new file called `drive_config.yaml` and will look like the following:
 
+```
 language_folders:
   en:
     abc123
   es:
     def456  
+```
 
 Where abc123 and def456 are the folder IDs for the en and es folders, respectively (example strings in this case).
