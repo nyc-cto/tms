@@ -64,8 +64,7 @@ def export_wordpress():
             content = data["content"]["rendered"]
             lang =  file_extension[1:]
             
-            if title is not None and title != '':
-              update_wordpress(id, lang, title, content)
+            update_wordpress(id, lang, title, content)
 
 def update_wordpress(id, language, title, content, excerpt=""):
   export_url = os.environ.get('WP_EXPORT_URL')
@@ -78,10 +77,7 @@ def update_wordpress(id, language, title, content, excerpt=""):
   url = f"{export_url}/wp-json/elsa/v1/translate/{id}/{language}"
   user = os.environ.get('WP_EXPORT_USER')
   password = os.environ.get('WP_EXPORT_PASSWORD')
-
-  # response = requests.post(url, headers=header, json=message)
-  response = requests.post(url, headers={"Content-Type": "application/json", 'User-Agent': ""}, auth=HTTPBasicAuth(user, password), json=message)
-  print(user, password, response.text)
+  response = requests.post(url, headers={'User-Agent': ""}, auth=HTTPBasicAuth(user, password), json=message)
   return {"status": "success"}
 
 
