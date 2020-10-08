@@ -491,5 +491,21 @@ common-settings
         #         }
         #     }
         # }
+        callback_plugins
+        {
+            :export_wp
+            {
+                plugin         run_command
+                data
+                {
+                    /*
+                    (STRING) A shell command to run
+                    Note that there can be more than one `command`
+                    entry defined.
+                    */
+                    command    python ../../import_export/export-wordpress.py
+                }
+            }
+        }
     }
 }

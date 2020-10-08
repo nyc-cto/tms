@@ -15,3 +15,5 @@ ingestion/secrets/
 .env
 /tmp
 drive_config.yaml
+**/Pipfile
+**/Pipfile.lock
