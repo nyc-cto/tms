@@ -81,7 +81,6 @@ def update_wordpress(id, language, title, content, excerpt=""):
 
   # response = requests.post(url, headers=header, json=message)
   response = requests.post(url, headers={"Content-Type": "application/json", 'User-Agent': ""}, auth=HTTPBasicAuth(user, password), json=message)
-  print(user, password, response.text)
   return {"status": "success"}
 
 
