@@ -148,5 +148,14 @@ def main():
         run()
         sleep(10)
 
+def new_main():
+    run()
+
 if __name__ == "__main__":
-    main()
+    """
+    commenting the original main out because
+    it is not compatible with our cron process.
+    leaving it in because we need to revisit whether this is the best approach.
+    """
+    # main()
+    new_main()

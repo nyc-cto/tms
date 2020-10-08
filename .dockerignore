@@ -4,3 +4,4 @@ tmp/
 .env.template
 docs/
 docker-compose.yml
+secrets/*
