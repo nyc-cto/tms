@@ -14,5 +14,6 @@ ingestion/secrets/
 **/.DS_Store
 .env
 /tmp
+drive_config.yaml
 **/Pipfile
 **/Pipfile.lock

@@ -1,0 +1,49 @@
+import pickle
+import os.path
+from httplib2 import Http
+from oauth2client import client
+from oauth2client import file
+from oauth2client import tools
+from googleapiclient.discovery import build
+from google.auth.transport.requests import Request
+
+
+SCOPE_READ_DRIVE = ['https://www.googleapis.com/auth/drive.metadata.readonly']
+SCOPE_READ_DOCS = ['https://www.googleapis.com/auth/documents.readonly']
+
+
+def build_service(creds, scope):
+    if scope == 'drive':
+        service = build('drive', 'v3', credentials=creds)
+    elif scope == 'docs':
+        service = build('docs', 'v1', credentials=creds)
+    else:
+        service = None
+    return service
+
+def generate_secrets(scope):
+    """
+    Generate secrets to access Google API, if not already generated, otherwise load in 
+    Input: scope of permissions for secrets (currently either drive or docs access)
+    Output: a Google service object which can access and execute on the Drive/Docs API
+    """
+    token_pickle_path = f'secrets/token_read_{scope}.pickle'
+    raw_token_path = f'secrets/token_read_{scope}.json'
+    credentials_path = f'secrets/credentials_{scope}.json'
+    creds = None
+    if os.path.exists(token_pickle_path):
+        with open(token_pickle_path, 'rb') as token:
+            creds = pickle.load(token)
+    # If there are no credentials available, let the user log in.
+    if not creds:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = client.flow_from_clientsecrets(credentials_path, scope)
+            store = file.Storage(raw_token_path)
+            creds = tools.run_flow(flow, store)
+        # Save the credentials for the next run
+        with open(token_pickle_path, 'wb') as token:
+            pickle.dump(creds, token)
+    service = build_service(creds, scope)
+    return service
