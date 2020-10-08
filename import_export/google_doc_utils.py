@@ -8,8 +8,8 @@ from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 
 
-SCOPE_READ_DRIVE = ['https://www.googleapis.com/auth/drive.metadata.readonly']
-SCOPE_READ_DOCS = ['https://www.googleapis.com/auth/documents.readonly']
+SCOPE_READ_DRIVE = ['https://www.googleapis.com/auth/drive']
+SCOPE_READ_DOCS = ['https://www.googleapis.com/auth/documents']
 
 
 def build_service(creds, scope):
