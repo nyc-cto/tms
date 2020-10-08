@@ -32,3 +32,4 @@ COPY . /var/tms
 RUN mkdir /var/.ssh_keys
 RUN ssh-keygen -t rsa -N "" -f /var/.ssh_keys/github_deploy_key
 RUN chmod 700 /var/.ssh_keys/github_deploy_key
+RUN chmod 755 /var/tms/run_serge.sh
