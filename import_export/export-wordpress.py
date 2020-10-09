@@ -35,37 +35,37 @@ SOURCE_DIRECTORY = 'source_files'
 SOURCE_LANGUAGE = 'en'
 
 def export_wordpress():
+  try:
+    # Get the latest commit?
+    repo = Repo(GIT_REPO_PATH)
+    commits_list = list(repo.iter_commits())
 
-  # Get the latest commit?
-  repo = Repo(GIT_REPO_PATH)
-  commits_list = list(repo.iter_commits())
+    a_commit = commits_list[0]
+    b_commit = commits_list[-1]
 
-  a_commit = commits_list[0]
-  b_commit = commits_list[-1]
+    diffs = a_commit.diff(b_commit)
+    files = [f.a_path for f in diffs]
 
-  diffs = a_commit.diff(b_commit)
-  files = [f.a_path for f in diffs]
+    for f in files:
+      if f.startswith(f"{SOURCE_DIRECTORY}"):
+        if not f.startswith(f"{SOURCE_PATH}"):
+          target = f"{ROOT_PATH}/{f}"
+          basename = os.path.basename(target)
+          if basename.startswith("wp"):
+            # print(target)
+            with open(target, "rb") as json_file:
+              filename, file_extension = os.path.splitext(basename)
 
-  for f in files:
-    if f.startswith(f"{SOURCE_DIRECTORY}"):
-      if not f.startswith(f"{SOURCE_PATH}"):
-        target = f"{ROOT_PATH}/{f}"
-        basename = os.path.basename(target)
-        if basename.startswith("wp"):
-          # print(target)
-          with open(target, "rb") as json_file:
-            filename, file_extension = os.path.splitext(basename)
+              data = json.load(json_file)
+              id = data["id"]
+              title = data["wptitle"]["rendered"]
+              content = data["content"]["rendered"]
+              lang =  file_extension[1:]
 
-            data = json.load(json_file)
-            print(data)
-            print(file_extension)
-            id = data["id"]
-            title = data["wptitle"]["rendered"]
-            content = data["content"]["rendered"]
-            lang =  file_extension[1:]
-            
-            if title is not None and title != '':
-              update_wordpress(id, lang, title, content)
+              if title is not None and title != '':
+                update_wordpress(id, lang, title, content)
+  except Exception as error:
+    print(f"ErrorExportToWordpress - Unable to add translated posts back into WP: {error}")
 
 def update_wordpress(id, language, title, content, excerpt=""):
   export_url = os.environ.get('WP_EXPORT_URL')
