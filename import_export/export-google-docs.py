@@ -54,7 +54,7 @@ def translate_doc(service_docs, doc_id, msgid_text, msgid_str):
     return response
 
 def main():
-    root_path = '/var/tms/serge/ts'
+    root_path = os.environ.get('TS_OUTBOX')
     translation_mapping = None
     with open(os.environ.get('GOOGLE_DRIVE_CONFIG')) as f:
         translation_mapping = yaml.load(f)
@@ -125,7 +125,8 @@ def main():
                             msgid_str = id_str_mapping[msgid_text]
                             print(f"replacing in doc {target_doc_id} {msgid_text} with {msgid_str}")
                             response_replace = translate_doc(service_docs, target_doc_id, msgid_text, msgid_str)
-                    except:
+                    except Exception as error:
+                        print(f"Error occurred while adding translated files back to language folder. {error}")
                         pass
 if __name__ == "__main__":
     main()

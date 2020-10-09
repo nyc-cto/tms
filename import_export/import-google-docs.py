@@ -20,7 +20,7 @@ import utils
 
 SOURCE_PATH = 'source_files/en'
 GIT_BRANCH = os.environ.get('TMS_DATA_BRANCH_NAME')
-ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '../../tms-data'))
+ROOT_PATH = os.environ.get('TMS_DATA_PATH')
 GIT_REPO_PATH = f'{ROOT_PATH}/.git'
 COMMIT_MESSAGE = 'Update shared repository'
 

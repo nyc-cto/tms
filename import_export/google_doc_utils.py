@@ -39,7 +39,8 @@ def generate_secrets(scope):
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = client.flow_from_clientsecrets(credentials_path, scope)
+            scope_to_send = SCOPE_READ_DRIVE if scope == 'drive' else SCOPE_READ_DOCS
+            flow = client.flow_from_clientsecrets(credentials_path, scope=scope_to_send)
             store = file.Storage(raw_token_path)
             creds = tools.run_flow(flow, store)
         # Save the credentials for the next run
