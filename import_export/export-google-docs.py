@@ -54,7 +54,7 @@ def translate_doc(service_docs, doc_id, msgid_text, msgid_str):
     return response
 
 def main():
-    root_path = os.environ.get('TS_OUTBOX')
+    root_path = '/var/tms/serge/ts'
     translation_mapping = None
     with open(os.environ.get('GOOGLE_DRIVE_CONFIG')) as f:
         translation_mapping = yaml.load(f)
