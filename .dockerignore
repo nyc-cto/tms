@@ -6,3 +6,6 @@ docs/
 docker-compose.yml
 drive_config.yaml
 drive_config.yaml.template
+secrets/*
+serge/db/*
+serge/ts/*
