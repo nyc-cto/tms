@@ -27,7 +27,7 @@ def git_push(git_repo_path, commit_message="Update data repository", enable_push
 
     t = repo.head.commit.tree
     repo.index.add(["source_files/en"])
-    if repo.git.diff("source_files/en"):
+    if repo.git.diff(t):
         repo.index.commit(commit_message)
         if enable_push:
             log.write(PUSHING_MESSAGE)
