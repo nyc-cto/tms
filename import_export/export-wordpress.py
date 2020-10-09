@@ -53,17 +53,21 @@ def export_wordpress():
           basename = os.path.basename(target)
           if basename.startswith("wp"):
             # print(target)
-            with open(target, "rb") as json_file:
-              filename, file_extension = os.path.splitext(basename)
+            try:
+              with open(target, "rb") as json_file:
+                filename, file_extension = os.path.splitext(basename)
 
-              data = json.load(json_file)
-              id = data["id"]
-              title = data["wptitle"]["rendered"]
-              content = data["content"]["rendered"]
-              lang =  file_extension[1:]
+                data = json.load(json_file)
+                id = data["id"]
+                title = data["wptitle"]["rendered"]
+                content = data["content"]["rendered"]
+                lang =  file_extension[1:]
 
-              if title is not None and title != '':
-                update_wordpress(id, lang, title, content)
+                if title is not None and title != '':
+                  update_wordpress(id, lang, title, content)
+            except Exception as err:
+              print(f"ErrorExportToWordpress - Unable to add translated posts back into WP: {err}")          
+              
   except Exception as error:
     print(f"ErrorExportToWordpress - Unable to add translated posts back into WP: {error}")
 
