@@ -1,0 +1,7 @@
+# This file defines which folders you want Google Drive import/export serivce
+# to import files from and export translated files back.
+language_folders:
+  en:
+    id-of-google-drive-en-folder
+  es:
+    id-of-google-drive-es-folder
