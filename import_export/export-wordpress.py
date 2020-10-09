@@ -73,7 +73,7 @@ def update_wordpress(id, language, title, content, excerpt=""):
       "content": content,
       "title": title,
       "excerpt": excerpt,
-      "status": "published"
+      "status": "publish"
   }
   url = f"{export_url}/wp-json/elsa/v1/translate/{id}/{language}"
   user = os.environ.get('WP_EXPORT_USER')
