@@ -41,6 +41,17 @@ def get_posts():
 
 def do_work():
     for post in get_posts():
+        """
+        Example wp link: 'https://ctoassetsstg.wpengine.com/es/2020/10/09/aditya-another-test-post/'
+
+        If there is a locale specified like `es` in the above link, then we do not want to import it as it is an already translated post.
+        Note: This logic does not support a non-english source language.
+        """
+        split_link = post['link'].split('/')
+        if len(split_link[3]) == 2:
+            print(f"Will not import translated post - ID: {post['id']} Title: {post['title']} Link: {post['link']}")
+            continue
+
         write_post(post)
     utils.git_push(utils.PROJECT_ROOT_GIT_PATH, commit_message="Update shared repository: wordpress", enable_push=True)
 
@@ -49,12 +60,20 @@ api = Api(app)
 
 class WordpressUpdateListener(Resource):
     def get(self):
-        do_work()
-        return "Get"
+        try:
+            do_work()
+            return {"success": True}
+        except Exception as error:
+            message = f"Something went wrong: {error}"
+            return {"success": False, "error_message": message}
 
     def post(self):
-        do_work()
-        return "Post"
+        try:
+            do_work()
+            return {"success": True}
+        except Exception as error:
+            message = f"Something went wrong: {error}"
+            return {"success": False, "error_message": message}
 
 api.add_resource(WordpressUpdateListener, "/wp-updates")
 

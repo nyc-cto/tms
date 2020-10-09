@@ -79,8 +79,13 @@ def update_wordpress(id, language, title, content, excerpt=""):
   user = os.environ.get('WP_EXPORT_USER')
   password = os.environ.get('WP_EXPORT_PASSWORD')
 
-  # response = requests.post(url, headers=header, json=message)
   response = requests.post(url, headers={"Content-Type": "application/json", 'User-Agent': ""}, auth=HTTPBasicAuth(user, password), json=message)
+
+  if not response.status_code == 201:
+    raise Exception(f"Update wordpress failed- {response.json()}")
+
+  print(f'Successfully updated post with ID: {id} Title: {title} Language: {language}')
+
   return {"status": "success"}
 
 
