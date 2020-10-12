@@ -14,7 +14,7 @@ PUSH_SUCCESSFUL_MESSAGE = "Push successful\n"
 
 
 # Push shared repository to Git if any files changed
-def git_push(git_repo_path, commit_message="Update data repository", enable_push=True, log=sys.stdout):
+def git_push(git_repo_path, commit_message="Update data repository", enable_push=True, log=sys.stdout, origin=None):
     """Utility method that pushes any updates to the source_files/en/ subdirectory of a git repo.
 
         Args:
@@ -27,7 +27,11 @@ def git_push(git_repo_path, commit_message="Update data repository", enable_push
 
     t = repo.head.commit.tree
     repo.index.add(["source_files/en"])
-    if repo.git.diff(t):
+    if origin == 'import-wp':
+        diff_changes = repo.git.diff('source_files/en')
+    else:
+        diff_changes = repo.git.diff(t)
+    if diff_changes:
         repo.index.commit(commit_message)
         if enable_push:
             log.write(PUSHING_MESSAGE)

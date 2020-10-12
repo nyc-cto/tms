@@ -53,7 +53,7 @@ def do_work():
             continue
 
         write_post(post)
-    utils.git_push(utils.PROJECT_ROOT_GIT_PATH, commit_message="Update shared repository: wordpress", enable_push=True)
+    utils.git_push(utils.PROJECT_ROOT_GIT_PATH, commit_message="Update shared repository: wordpress", enable_push=True, origin='import-wp')
 
 app = Flask(__name__)
 api = Api(app)
