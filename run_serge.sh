@@ -1,4 +1,5 @@
 cd /var/tms
+echo "Current Datetime is : $(date)"
 python import_export/import-google-docs.py
 serge sync /var/tms/serge/configs/google_config.serge
 sleep 3
