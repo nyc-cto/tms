@@ -30,7 +30,7 @@ jobs
 
         # Destination languages can be changed to a space separated list (ex. es fr ru)
         # Supported languages include: es zh ru bn ht ko ar fr ur pl
-        destination_languages       es
+        destination_languages       es ru ko fr
 
         # When set to YES, will put an empty string for any untranslated string in the localized file
         # When set to NO, will put the original source language (English) string in the localized file instead
