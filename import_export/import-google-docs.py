@@ -79,11 +79,13 @@ def main():
     file_ids = []
     page_token = None
     while True:
+        print("Getting page right now --> ", page_token)
         response = service_drive.files().list(spaces='drive',
                                               fields='nextPageToken, files(id, name, parents)',
                                               pageToken=page_token).execute()
         for file_content in response.get('files', []):
             # Process change
+            print("file_content --> ", file_content)
             file_parents = file_content.get('parents')
             if file_parents and translation_mapping['language_folders']['en'] in file_parents:
                 print(f"Found file {file_content.get('name')} with id {file_content.get('id')} and parents {file_content.get('parents')}")

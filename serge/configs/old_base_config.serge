@@ -124,7 +124,7 @@ common-settings
         # (ARRAY) Destination (generated) languages.
         # This list should not include the source language.
         # There should be at least one destination language defined.
-        destination_languages       es
+        destination_languages       de ja ru
 
         # (STRING) Path to source files relative to the config file
         # ('.' here is the current dir)
