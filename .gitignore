@@ -11,6 +11,7 @@ ingestion/secrets/
 !/serge/ts/README.md
 /serge/db/*
 !/serge/db/README.md
+serge/configs/google_config.serge
 **/.DS_Store
 .env
 /tmp
