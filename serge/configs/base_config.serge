@@ -186,7 +186,6 @@ common-settings
             # plugin for more information.
             data
             {
-                path_matches \/(about|title|description|content|rendered)$
                 path_html                        \/rendered$
 
                 html_parser
@@ -447,28 +446,28 @@ common-settings
         # Default: UTF-8
         # This value has effect only if `output_lang_files` or `output_default_lang_file`
         # parameters are set to YES
-        output_encoding             UCS-2LE
+        output_encoding             UTF-8
 
         # (BOOLEAN) [OPTIONAL] Should the BOM ("byte order mark")
         # be emitted at the beginning of the output file?
         # YES - output the BOM (default)
         # NO - do not output the BOM
-        output_bom                  YES
+        output_bom                  NO
 
         # [OPTIONAL] Map telling to use different language name in language macros
         # (see the list of available macros in `ts_file_path` parameter description)
         # and when constructing output path (see `output_file_path` parameter).
         # This allows to tweak language/locale names for different projects.
-        output_lang_rewrite
-        {
-            no                      nb
-        }
+        # output_lang_rewrite
+        # {
+        #    no                      nb
+        #}
 
         # (STRING) Path to a generated file (relative to the config file or absolute).
         # Allowed macros: same as for the `ts_file_path` parameter (see above)
         # This value has effect only if `output_lang_files` or `output_default_lang_file`
         # parameters are set to YES
-        output_file_path            %ENV:TMS_DATA_PATH%/source_files/%LANG%/%FILE%.%LANG%
+        output_file_path            %ENV:TMS_DATA_PATH%/src/locales/%LANG%/%LANG%.%EXT%
 
         # [OPTIONAL] A list of callback plugins that we should load,
         # with the parameters to pass

@@ -18,6 +18,10 @@ TS_INBOX = os.getenv('TS_INBOX')
 TS_OUTBOX = os.getenv('TS_OUTBOX')
 TRANSLATION_GOOGLE_KEY = os.getenv('TRANSLATION_GOOGLE_KEY')
 
+print("SERGE_TS", SERGE_TS)
+print("TS_SERGE_COPY", TS_SERGE_COPY)
+print("TS_INBOX", TS_INBOX)
+print("TS_OUTBOX", TS_OUTBOX)
 
 def serge_push_ts(serge_ts, ts_serge_copy, ts_inbox, ts_outbox, translation_api, google_key_path):
     """Handles the Serge push_ts command. Copies .po files from serge_ts that are new/updated

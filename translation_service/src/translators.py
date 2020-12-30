@@ -31,6 +31,7 @@ class CapsTranslator(Translator):
                 A list of the capitalized strings.
         """
         cap_texts_list = []
+        print("CAP TEXT LIST", cap_texts_list)
         for text in texts_list:
             # Capitalize the text
             text = text.upper()
@@ -41,7 +42,8 @@ class CapsTranslator(Translator):
 
             # Add the text to the list to be returned
             cap_texts_list.append(text)
-
+        
+        print("CAP TEXT LIST", cap_texts_list)
         return cap_texts_list
 
 
