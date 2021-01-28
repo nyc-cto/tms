@@ -1,17 +1,16 @@
-# Running Serge w/ Docker
-Serge is currently setup to run in a Docker container that is also setup to run any Python 3.8.5 applications. Its based on the Debian:buster image.
-Follow the steps below to get this up and running
+# Background
 
-# Running Translation Service w/ Docker
-The Docker image is setup to run the Translation service Python application. The current image is setup to use Python 3.8.5 and will install any dependencies specified in `/translation_service/requirements.txt` during the build process.
-Follow the same steps as outlined below.
+For an overview of the project, see the main [README](https://github.com/nyc-cto/tms/blob/master/README.md)
 
-# Running Ingestion Service w/ Docker
-The Docker image is setup to run the Ingestion service Python application. The current image is setup to use Python 3.8.5 and will install any dependencies specified in `/import_export/requirements.txt` during the build process.
-Follow the same steps as outlined below.
+# Developing Local with Docker
+
+This doc outlines how we test ELSA locally, using Docker to create a standardized development environment and manage dependencies.
+
+### TODO: Document AWS cloud setup
 
 
-## Docker Setup Overview
+# Docker Setup
+
 At a high-level you need to get familiarized with two docker functions-
 1. `docker build`
 This "builds" your Docker image by downloading and installing all the packages required as defined by either your Python code or the code defined in Serge.
@@ -23,13 +22,26 @@ This command is responsible to "spin-up" the container that is defined in `docke
 
 
 ### Pre-requisites
+- Create a local git repository
+```
+mkdir your-dir-name
+cd your-dir-name
+git init
+git remote add origin git@github.com:nyc-cto/tms.git
+git pull origin master
+```
+
 - Docker Desktop (https://www.docker.com/get-started)
-- Copy over `.env.template` into `.env` with any other environment variables the application needs access to.
+- Copy over `.env.template` into `.env` with any other environment variables the application needs access to. Whenever you update `.env`, don't forget to `source .env`
 - Setup Secrets by looking at the following templates and re-creating them:
 	- `git_key.template` -> `git_key`
 	- `IngestionGoogleKey.json.template` -> `IngestionGoogleKey.json`
 	- `TranslationGoogleKey.json.template` -> `TranslationGoogleKey.json`
 Your google keys may be the same as the existing ones, but your git_key will certainly need to be created.
+
+For SSH keys, see (connecting-to-github-with-ssh)[https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh]. Currently the image will generate keys during image build process. If you wish to use those, once you are inside the Docker container (as documented further down this doc), you can `cat /var/.ssh_keys/github_deploy_key.pub` and enter that value into the (https://github.com/settings/keys)[Github Deploy Keys page].
+
+
 
 ## Build Process
 1. Open/Run Docker Desktop
@@ -72,20 +84,19 @@ docker-compose exec serge bash
 bin   common  etc   import_export  lib64  mnt  proc  run   serge-1.4	 srv  testing  translation_service  var
 boot  dev     home  lib        media  opt  root  sbin  shared_directory  sys  tmp      usr
 ```
+5. See instructions below for specific applications (eg Serge, TS, or import_export)
 
-## App-specific development
-1. Navigate into the directory of the application you would like to develop.
-```
-# For serge
-cd /var/tms/serge/configs
+6. Remember you can change any code you would like locally in your machine (not inside Docker) and it will take effect within Docker. Use this step to make some changes to your code. Navigate into your application directory within the Docker container and verify that the changes appear correctly.
 
-# For translation servie
-cd /var/tms/translation_service
+7. When you are done, to tear down just run `exit` inside of the shell session. And you can ctrl+c to stop the container from running.
 
-# For ingestion service
-cd /var/tms/import_export
-```
-2. (A) FOR SERGE ONLY: At this point you can change the `sampleconfigs.serge` file and run it as needed.
+
+# Running Serge with Docker
+
+Serge is currently setup to run in a Docker container that is also setup to run any Python 3.8.5 applications. It's based on the Debian:buster image.
+
+`cd /var/tms/serge/configs`
+
 All the commands below will work except for `push-ts` and `pull-ts` without any additional work.
 Feel free to create new configuration files in the `/var/tms/serge/configs` directory and test them inside the container by running the commands below. You can change/edit these files in your local filesystem since the directory is mounted in the container.
 ```
@@ -110,16 +121,24 @@ serge push-ts sampleconfigs.serge
 # Command to push back to the original source repository
 serge push sampleconfigs.serge
 ```
-2. (B) FOR PYTHON APPS: Just run `python your_py_file.py` to execute any code you would like to run.
-
-3. Remember you can change any code you would like locally in your machine (not inside Docker) and it will take effect within Docker. Use this step to make some changes to your code. Navigate into your application directory within the Docker container and verify that the changes appear correctly.
-
-4. To tear down just run `exit` inside of the shell session. And you can ctrl+c to stop the container from running.
 
 
-### Troubleshooting
+# Running Translation Service w/ Docker
 
-#### Directory Permissions issue. It may look like the following:
+These are documented in [translation_service/README](https://github.com/nyc-cto/tms/blob/master/translation_service/README.md)
+
+The Docker image is setup to run the Translation service Python application. The current image is setup to use Python 3.8.5 and will install any dependencies specified in `/translation_service/requirements.txt` during the build process. Just run `python your_py_file.py` to execute any python code.
+
+
+# Running Wordpress or Google Docs Import/Export Services w/ Docker
+
+These are documented in [import_export/README](https://github.com/nyc-cto/tms/blob/master/import_export/README.md)
+
+The Docker image is setup to run these Python applications. The current image is setup to use Python 3.8.5 and will install any dependencies specified in `/import_export/requirements.txt` during the build process. Just run `python your_py_file.py` to execute any python code.
+
+# Troubleshooting
+
+## Directory Permissions issue. It may look like the following:
 ```
 Deleting directory '/var/serge/vcs/'
 Creating directory '/var/serge/vcs/'

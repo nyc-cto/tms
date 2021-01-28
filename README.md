@@ -10,6 +10,10 @@ For a high-level overview of the pipeline, please see our [presentation slide de
 
 **Please reach out to [jiman@cto.nyc.gov](mailto:jiman@cto.nyc.gov) if you would like to get involved!**
 
+# Getting Started
+
+To get ELSA set up and running on your own computer, see the [Getting Started](https://github.com/nyc-cto/tms/blob/master/docs/getting-started.md)
+
 ## FAQ
 
 ### General
