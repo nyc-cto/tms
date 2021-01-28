@@ -40,7 +40,7 @@ git pull origin master
 
 Your google keys may be the same as the existing ones, but your git_key will certainly need to be created.
 
-For SSH keys, see [connecting-to-github-with-ssh](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh). Currently the image will generate keys during image build process. If you wish to use those, once you are inside the Docker container (as documented further down this doc), you can `cat /var/.ssh_keys/github_deploy_key.pub` and enter that value into the [https://github.com/settings/keys](Github Deploy Keys page).
+For SSH keys, see [connecting-to-github-with-ssh](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh). Currently the image will generate keys during image build process. If you wish to use those, once you are inside the Docker container (as documented further down this doc), you can `cat /var/.ssh_keys/github_deploy_key.pub` and enter that value into the [Github Deploy Keys page](https://github.com/settings/keys).
 
 
 
