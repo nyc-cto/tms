@@ -37,9 +37,10 @@ git pull origin master
 	- `git_key.template` -> `git_key`
 	- `IngestionGoogleKey.json.template` -> `IngestionGoogleKey.json`
 	- `TranslationGoogleKey.json.template` -> `TranslationGoogleKey.json`
+
 Your google keys may be the same as the existing ones, but your git_key will certainly need to be created.
 
-For SSH keys, see (connecting-to-github-with-ssh)[https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh]. Currently the image will generate keys during image build process. If you wish to use those, once you are inside the Docker container (as documented further down this doc), you can `cat /var/.ssh_keys/github_deploy_key.pub` and enter that value into the (https://github.com/settings/keys)[Github Deploy Keys page].
+For SSH keys, see [connecting-to-github-with-ssh](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh). Currently the image will generate keys during image build process. If you wish to use those, once you are inside the Docker container (as documented further down this doc), you can `cat /var/.ssh_keys/github_deploy_key.pub` and enter that value into the [https://github.com/settings/keys](Github Deploy Keys page).
 
 
 
@@ -95,11 +96,10 @@ boot  dev     home  lib        media  opt  root  sbin  shared_directory  sys  tm
 
 Serge is currently setup to run in a Docker container that is also setup to run any Python 3.8.5 applications. It's based on the Debian:buster image.
 
-`cd /var/tms/serge/configs`
-
 All the commands below will work except for `push-ts` and `pull-ts` without any additional work.
 Feel free to create new configuration files in the `/var/tms/serge/configs` directory and test them inside the container by running the commands below. You can change/edit these files in your local filesystem since the directory is mounted in the container.
 ```
+cd /var/tms/serge/configs
 
 # Command to initialize and setup the sqlite3 database and pull the repository for the first time.
 serge pull sampleconfigs.serge --initialize
