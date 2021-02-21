@@ -12,7 +12,7 @@ To properly import/export Google docs with Serge, you need to set up the followi
 2. OAuth redentials allowing you to access the Google Drive/Docs API via your Gmail account. To set up these credentials:
 	a. Go to the [Google API Console](https://console.developers.google.com/apis/credentials)
 	b. Create a project, if you have not already
-	c. Go to `Create Credentials --> OAuth client ID` (You should choose "Desktop app" as the Application Type and whatever you like as the Name)
+	c. Go to `Create Credentials --> OAuth client ID` (TODO: What Application Type should you choose?)
 	d. Create the credentials, download then, and save 2 copies, one as `credentials_drive.json` and another as `credentials_docs.json`, in a credentials folder called `secrets` in the root level of the git project. 
 3. A Google drive folder which will contain all of the original and translated documents in folders. The original documents lie in the `en` folder, and each language you are translating into will have documents in ISO 639-1 standard language code-named folders. For example, if in your Google Drive you create a root folder named `Translations` and want to translate into Spanish (es) and Mandarin (zh), the directory structure would be as follows:
 
