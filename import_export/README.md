@@ -12,7 +12,7 @@ To properly import/export Google docs with Serge, you need to set up the followi
 2. OAuth redentials allowing you to access the Google Drive/Docs API via your Gmail account. To set up these credentials:
 	a. Go to the [Google API Console](https://console.developers.google.com/apis/credentials)
 	b. Create a project, if you have not already
-	c. Go to `Create Credentials --> OAuth client ID`
+	c. Go to `Create Credentials --> OAuth client ID` (You should choose "Desktop app" as the Application Type and whatever you like as the Name)
 	d. Create the credentials, download then, and save 2 copies, one as `credentials_drive.json` and another as `credentials_docs.json`, in a credentials folder called `secrets` in the root level of the git project. 
 3. A Google drive folder which will contain all of the original and translated documents in folders. The original documents lie in the `en` folder, and each language you are translating into will have documents in ISO 639-1 standard language code-named folders. For example, if in your Google Drive you create a root folder named `Translations` and want to translate into Spanish (es) and Mandarin (zh), the directory structure would be as follows:
 
@@ -39,6 +39,38 @@ language_folders:
 ```
 
 Where abc123 and def456 are the folder IDs for the en and es folders, respectively (example strings in this case).
+
+### Example
+
+Make sure that the service is running somewhere (for example, in Docker, as detailed in [these setup instructions](../docs/getting-started.md))
+
+Now that you have the Google Drive folder structure for translations, let's try running one.
+
+In your Translations/en folder, create a new doc called "translation1".
+
+In the doc, add this text:
+
+```
+Hello, world!
+```
+
+Next, head to your command line on your local workstation and enter your running Docker container (if you are using Docker to run the service):
+
+```bash
+(your-local-workstation) $ docker-compose exec serge bash
+```
+
+Once you are in the container, change to this directory:
+
+```bash
+(docker-container) $ cd /var/tms
+```
+
+And run this command:
+
+```bash
+(docker-container) $ sh run_ingest_sync_simple.sh
+```
 
 ## Wordpress
 

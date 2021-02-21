@@ -1,15 +1,20 @@
-# Background
+# Getting Started
+
+## Background
 
 For an overview of the project, see the main [README](https://github.com/nyc-cto/tms/blob/master/README.md)
 
-# Developing Local with Docker
+## Running Locally with Docker
 
 This doc outlines how we test ELSA locally, using Docker to create a standardized development environment and manage dependencies.
 
-### TODO: Document AWS cloud setup
+### Pre-requisites
 
+- [Install Docker](https://www.docker.com/) on your local workstation
+- [Install Docker Compose](https://docs.docker.com/compose/) on your local workstation
+- (recommended if you are using Windows or a Mac) [Install Docker Desktop on your workstation](https://docs.docker.com/desktop/)
 
-# Docker Setup
+### Docker Notes
 
 At a high-level you need to get familiarized with two docker functions-
 1. `docker build`
@@ -20,32 +25,35 @@ You will not be running this very often. Typically you'll be building a new imag
 2. `docker-compose`
 This command is responsible to "spin-up" the container that is defined in `docker-compose.yml`. This file essentially tells Docker to run an instance of the image that was previously built. At this step, we will specify the environment-specific configurations as well as "mount" volumes that are shared by both your local machine as well as the docker container. This is useful because you may want to change some code in your local machine and quickly test those changes inside the docker container to see if it had the intended effect.
 
+### Set Up
 
-### Pre-requisites
-- Create a local git repository
+**Clone this Git repository**
+
 ```
-mkdir your-dir-name
-cd your-dir-name
-git init
-git remote add origin git@github.com:nyc-cto/tms.git
-git pull origin master
+git clone git@github.com:nyc-cto/tms.git
+cd tms
 ```
 
-- Docker Desktop (https://www.docker.com/get-started)
+**Set up env.template**
+
 - Copy over `.env.template` into `.env` with any other environment variables the application needs access to. Whenever you update `.env`, don't forget to `source .env`
-- Setup Secrets by looking at the following templates and re-creating them:
-	- `git_key.template` -> `git_key`
-	- `IngestionGoogleKey.json.template` -> `IngestionGoogleKey.json`
-	- `TranslationGoogleKey.json.template` -> `TranslationGoogleKey.json`
+
+**Set up secrets files**
+
+```bash
+cp secrets/git_key_template git_key
+cp secrets/IngestionGoogleKey.json.template IngestionGoogleKey.json
+cp TranslationGoogleKey.json.template TranslationGoogleKey.json
+```
 
 Your google keys may be the same as the existing ones, but your git_key will certainly need to be created.
 
 For SSH keys, see [connecting-to-github-with-ssh](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh). Currently the image will generate keys during image build process. If you wish to use those, once you are inside the Docker container (as documented further down this doc), you can `cat /var/.ssh_keys/github_deploy_key.pub` and enter that value into the [Github Deploy Keys page](https://github.com/settings/keys).
 
 
+### Building
 
-## Build Process
-1. Open/Run Docker Desktop
+1. Have Docker running on your local workstation (If you are on Windows or a Mac, the easiest way to do this is to open/run Docker Desktop)
 2. Build the docker image locally
 ```
 cd ~/tms
@@ -62,6 +70,7 @@ serge                                                                         la
 ```
 
 ## Container Up/Down
+
 1. Now that the image exists and is built-- you're ready to spin up the container. For this you will need two terminal windows/tabs. You can do this in one if you prefer.
 ```
 docker-compose up
@@ -91,8 +100,7 @@ boot  dev     home  lib        media  opt  root  sbin  shared_directory  sys  tm
 
 7. When you are done, to tear down just run `exit` inside of the shell session. And you can ctrl+c to stop the container from running.
 
-
-# Running Serge with Docker
+## Running Serge with Docker
 
 Serge is currently setup to run in a Docker container that is also setup to run any Python 3.8.5 applications. It's based on the Debian:buster image.
 
@@ -123,7 +131,7 @@ serge push sampleconfigs.serge
 ```
 
 
-# Running Translation Service w/ Docker
+## Running Translation Service w/ Docker
 
 These are documented in [translation_service/README](https://github.com/nyc-cto/tms/blob/master/translation_service/README.md)
 
@@ -149,3 +157,4 @@ Exit code: -128; last error: No such file or directory
 The fix for this is to run your command with `sudo`.
 `sudo serge pull sampleconfig.serge --initialize` which will give your environment the right privileges to create/destroy directories.
 
+### TODO: Document AWS cloud setup
