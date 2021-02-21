@@ -56,3 +56,36 @@ sh run_ingest_sync.sh
 ```
 
 Note that running this command requires forcefully terminating the script if you wish to stop running it and may result in residual intermediate files -- execute `sh run_ingest_sync_simple.sh` to clean these up properly.
+
+
+# Wordpress
+
+### Importing from Wordpress
+
+When a wordpress website changes, import-wordpress.py will download the new contents of the site via wordpress’s built-in JSON REST API at the endpoint `wp-json/wp/v2/posts`. It needs you to set the site’s login credentials WP_IMPORT_URL, WP_IMPORT_USER, and WP_IMPORT_PASSWORD in the .env file. Then you can run the script via `python import-wordpress.py`
+
+To activate it, import-wordpress needs to be notified each time the website changes. It runs a flask server which listens on port 5000 (the default flask port) for requests to the /wp-updates endpoint. If you are testing it locally, you may find it easiest to trigger the webhook manually by just loading http://localhost:5000/wp-updates in your browser.
+
+#### Using WP Webhooks to Listen for Changes
+
+When deployed to production, we suggest you use a wordpress plugin to automatically trigger the flask endpoint when the site is changed. We used WP Webhooks. Once this plugin is installed, on the wp-admin page, go to Settings->WP Webhooks. To make debugging easier, you may temporarily turn off the global setting "Deactivate Post Trigger Delay". 
+
+Go to Send Data->Send Data on Post Update.  Add a new webhook. 
+
+Webhook Name = Your name or something
+
+Webhook Url = http://IP.ADDRESS.OF.FLASK:5000/wp-updates
+
+Set  "allow unsafe looking urls". 
+
+Click orange "Add" button
+
+Click "Send Demo". This should cause it to ping your flask endpoint.
+
+From the main menu on the left hand side of the page, go to Posts -> All Posts and click "Edit" under "Hello World".
+Make a change to the text of the page and click "Update".
+This should cause it to ping your flask endpoint.
+
+### Exporting to Wordpress
+
+TODO
