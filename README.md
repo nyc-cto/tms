@@ -21,7 +21,7 @@ The primary objective of Project ELSA was to explore and provide a low level, ze
 - Built in Translation Memory to ensure that common strings aren't re-translated repeatedly
 - Designed for the needs of government
 
-## Non-Goals
+### Non-Goals
 - Not a commercial product so it does not fit every need or every edge case - if it doesn't fit your usecase, please consider [contributing](/CONTRIBUTING.md)
 - Not a project management tool for translation workflows - there are other tools out there that do that well
 - Not a CAT tool - translation and localization is done outside of ELSA, this is just the pipeline.
