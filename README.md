@@ -8,7 +8,7 @@ This Proof of Concept codebase was built by NYC\[x\] Innovation Fellows working 
 
 ## Getting Started
 
-To get ELSA set up and running, see the [Getting Started](https://github.com/nyc-cto/tms/blob/master/docs/getting-started.md)
+To get ELSA set up and running, see the [Getting Started](https://github.com/nyc-cto/tms/blob/master/docs/getting-started.md) guide.
 
 
 ## Background
