@@ -23,18 +23,6 @@ COMMIT_MESSAGE = 'Update shared repository'
 UPDATE_URL_ROOT = 'https://docs.googleapis.com/v1/documents'
 
 
-def read_paragraph_element(element):
-    """Returns the text in the given ParagraphElement.
-
-        Args:
-            element: a ParagraphElement from a Google Doc.
-    """
-    text_run = element.get('textRun')
-    if not text_run:
-        return ''
-    return text_run.get('content')
-
-
 def translate_doc(service_docs, doc_id, msgid_text, msgid_str):
     payload = {
       "requests": [
