@@ -40,9 +40,18 @@ def generate_secrets(scope):
             creds.refresh(Request())
         else:
             scope_to_send = SCOPE_READ_DRIVE if scope == 'drive' else SCOPE_READ_DOCS
-            flow = client.flow_from_clientsecrets(credentials_path, scope=scope_to_send)
+            print('im here')
+            flow = client.flow_from_clientsecrets(credentials_path, scope=scope_to_send, redirect_uri='http://127.0.0.1:8000')
+            print(flow)
+            print(flow.redirect_uri)
+            print(dir(flow))
             store = file.Storage(raw_token_path)
-            creds = tools.run_flow(flow, store)
+            class Flag:
+                auth_host_name = '127.0.0.1'
+                auth_host_port = [8000]
+                logging_level = 'INFO'
+                noauth_local_webserver = False
+            creds = tools.run_flow(flow, store, flags=Flag())
         # Save the credentials for the next run
         with open(token_pickle_path, 'wb') as token:
             pickle.dump(creds, token)

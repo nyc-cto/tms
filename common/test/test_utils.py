@@ -93,3 +93,6 @@ class TestUtils(unittest.TestCase):
         # TEST: When uncommited changes have been made to the repo,
         #       it logs the DEBUGGING_MESSAGE
         self.assertEqual(log.getvalue(), utils.DEBUGGING_MESSAGE)
+
+if __name__ == '__main__':
+    unittest.main()

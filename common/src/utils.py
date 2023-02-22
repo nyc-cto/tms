@@ -24,7 +24,7 @@ def git_push(git_repo_path, commit_message="Update data repository", enable_push
             log: Where to print messages. Default is to stdout.
     """
     repo = Repo(git_repo_path)
-
+    print(repo)
     t = repo.head.commit.tree
     repo.index.add(["source_files/en"])
     if origin == 'import-wp':
