@@ -38,7 +38,7 @@ def main():
     print("Finding documents")
     file_ids = []
     page_token = None
-    while True:
+    while len(file_ids) < 1:
         response = service_drive.files().list(spaces='drive',
                                               fields='nextPageToken, files(id, name, parents)',
                                               pageToken=page_token).execute()
@@ -49,14 +49,19 @@ def main():
                 print(f"Found file {file_content.get('name')} with id {file_content.get('id')} and parents {file_content.get('parents')}")
                 file_id = file_content.get('id')
                 file_ids.append(file_id)
+                break
         page_token = response.get('nextPageToken', None)
+        print(response)
+        print(page_token)
         if page_token is None:
             break 
 
     print("Obtaining document contents")
     # For each file, get contents
+    print(file_ids)
     for file_id in file_ids:
         result = service_docs.documents().get(documentId=file_id).execute()
+        print(result)
         # Remove newline and non-ASCII apostrophe characters
         # For Google doc transcribing to look correct
         result = json.loads(json.dumps(result)
@@ -64,6 +69,7 @@ def main():
             .replace('\\u2019', "'")
             )
         filename = f"{ROOT_PATH}/{SOURCE_PATH}/{result.get('title')}.json"
+        print(filename)
         with open(filename, 'w') as outfile:
             json.dump(result, outfile)
 

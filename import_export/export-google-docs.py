@@ -37,6 +37,12 @@ def translate_doc(service_docs, doc_id, msgid_text, msgid_str):
         }
       ]
     }
+    print(payload)
+    print(doc_id)
+    
+    consent = input('Enter verification code: ').strip()
+    if consent != 'OK':
+        raise Exception('no consent to proceed')
     request = service_docs.documents().batchUpdate(documentId=doc_id, body=payload)
     response = request.execute()
     return response
@@ -57,10 +63,16 @@ def main():
     print("Finding documents")
     file_name_id_map = {}
     page_token = None
-    while True:
+    while len(file_name_id_map.keys()) < 1:
         response = service_drive.files().list(spaces='drive',
                                               fields='nextPageToken, files(id, name, parents)',
                                               pageToken=page_token).execute()
+        files_identified = response.get('files', [])
+        print(f'Identified {len(files_identified)} files.')
+        consent = input('Enter verification code: ').strip()
+        if consent != 'OK':
+            raise Exception('no consent to proceed')
+
         for file_content in response.get('files', []):
             # Process change
             file_id = file_content.get('id')
@@ -70,8 +82,11 @@ def main():
             # Delete translated files in Google docs to make space for new translations
             if file_parents and any(folder in non_en_folders for folder in file_parents):
                 print(f"deleting file {file_id}")
+                consent = input('Enter verification code: ').strip()
+                if consent != 'OK':
+                    raise Exception('no consent to proceed')
                 service_drive.files().delete(fileId=file_id).execute()
-            
+
             # Map English files' names to Google doc ID
             # So we know which document each .po file corresponds to
             if file_parents and translation_mapping['language_folders']['en'] in file_parents:
@@ -102,6 +117,9 @@ def main():
                         # And move it to the target language folder
                         newfile = {'name': file_name, 'parents' : [translation_mapping['language_folders'][folder_lang]]}
                         print(f"Copying document {file_name} over to {folder_lang} folder")
+                        consent = input('Enter verification code: ').strip()
+                        if consent != 'OK':
+                            raise Exception('no consent to proceed')
                         response_copy = service_drive.files().copy(fileId=file_name_id_map[file_name], body=newfile).execute()
                         target_doc_id = response_copy["id"]
                         
